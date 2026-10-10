@@ -2,34 +2,69 @@
  * Belanjawan Kelab Guru - bahagian pelayan (Google Apps Script).
  * Skrip ini "terikat" pada Google Sheet: Extensions > Apps Script.
  *
- * Lajur helaian Transaksi: A ID | B Tarikh | C Jenis | D Kategori | E Ahli/Pihak | F Butiran | G Jumlah | H Baki
+ * Lajur helaian Transaksi:
+ *  A ID | B Tarikh | C Ahli/Pihak | D Butiran | E Kategori | F Bulan Yuran |
+ *  G Kelab | H Lawatan | I Masuk Lain | J Keluar | (K Baki, L Hari# = formula, jangan disentuh)
  */
 const SHEET_TX = 'Transaksi';
 const SHEET_SET = 'Tetapan';
 const TZ = 'Asia/Kuala_Lumpur';
+const NCOL = 10;
 
 function doGet() {
-  return HtmlService.createHtmlOutputFromFile('Index')
-    .setTitle('Belanjawan Kelab Guru')
-    .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover')
-    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  try {
+    return HtmlService.createHtmlOutputFromFile('Index')
+      .setTitle('Belanjawan Kelab Guru')
+      .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover')
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  } catch (err) {
+    return HtmlService.createHtmlOutput('<pre style="font:14px monospace;padding:16px">Ralat: ' +
+      String(err).replace(/</g, '&lt;') + '\n\nPastikan fail HTML dinamakan "Index".</pre>');
+  }
 }
 
-/** Jalankan SEKALI dari editor untuk menetapkan PIN: setPin('1234'). */
+/**
+ * LANGKAH PERTAMA: tukar 1234 di bawah kepada PIN pilihan anda (4-8 digit),
+ * pilih fungsi "aturPin" di bar atas editor, tekan Run, dan beri kebenaran (Authorize).
+ * Kebenaran ini WAJIB sebelum Deploy; tanpanya pautan web app tidak akan terbuka.
+ */
+function aturPin() { setPin('1234'); }
+
 function setPin(pin) {
-  if (!/^\d{4,8}$/.test(String(pin))) throw new Error('PIN mesti 4-8 digit');
-  PropertiesService.getScriptProperties().setProperty('PIN', String(pin));
+  pin = String(pin);
+  if (!/^\d{4,8}$/.test(pin)) throw new Error('PIN mesti 4-8 digit');
+  const ss = SpreadsheetApp.getActive();
+  if (!ss) throw new Error('Skrip ini mesti dibuka melalui Extensions > Apps Script dalam Google Sheet anda.');
+  if (!ss.getSheetByName(SHEET_TX) || !ss.getSheetByName(SHEET_SET)) {
+    throw new Error('Tab "Transaksi" / "Tetapan" tiada. Import helaian baharu dahulu.');
+  }
+  const props = PropertiesService.getScriptProperties();
+  props.setProperty('PIN', pin);
+  props.setProperty('SSID', ss.getId());
+  LockService.getScriptLock(); // sentuh LockService supaya kebenarannya diminta sekarang
+  Logger.log('Siap. PIN ditetapkan. Seterusnya: Deploy > New deployment > Web app.');
+}
+
+/** Ujian dari editor: pilih testApp dan tekan Run; log menunjukkan sama ada data boleh dibaca. */
+function testApp() {
+  const d = getData(PropertiesService.getScriptProperties().getProperty('PIN'));
+  Logger.log('OK: ' + d.items.length + ' transaksi, ' + d.ahli.length + ' ahli');
 }
 
 function checkPin_(pin) {
   const saved = PropertiesService.getScriptProperties().getProperty('PIN');
-  if (!saved) throw new Error('PIN belum ditetapkan. Jalankan setPin("1234") di editor Apps Script.');
+  if (!saved) throw new Error('PIN belum ditetapkan. Jalankan setPin di editor Apps Script.');
   if (String(pin) !== saved) throw new Error('PIN salah');
 }
 
+function ss_() {
+  const id = PropertiesService.getScriptProperties().getProperty('SSID');
+  return id ? SpreadsheetApp.openById(id) : SpreadsheetApp.getActive();
+}
+
 function sheet_(name) {
-  const s = SpreadsheetApp.getActive().getSheetByName(name);
-  if (!s) throw new Error('Helaian "' + name + '" tiada');
+  const s = ss_().getSheetByName(name);
+  if (!s) throw new Error('Tab "' + name + '" tiada');
   return s;
 }
 
@@ -38,24 +73,32 @@ function getData(pin) {
   checkPin_(pin);
   const tx = sheet_(SHEET_TX);
   const last = lastRow_(tx);
-  const rows = last < 2 ? [] : tx.getRange(2, 1, last - 1, 7).getValues();
+  const rows = last < 2 ? [] : tx.getRange(2, 1, last - 1, NCOL).getValues();
   const items = rows.map(function (r) {
     return {
-      id: r[0], tarikh: fmtDate_(r[1]), jenis: r[2], kategori: r[3],
-      ahli: r[4], butiran: r[5], jumlah: Number(r[6]) || 0
+      id: r[0], tarikh: fmtDate_(r[1]), ahli: r[2], butiran: r[3], kategori: r[4], bulan: String(r[5] || ''),
+      kelab: Number(r[6]) || 0, lawatan: Number(r[7]) || 0, lain: Number(r[8]) || 0, keluar: Number(r[9]) || 0
     };
   });
 
   const set = sheet_(SHEET_SET);
   const ahli = set.getRange(5, 1, 15, 6).getValues()
     .filter(function (r) { return r[0]; })
-    .map(function (r) { return { nama: r[0], kelab: Number(r[3]) || 0, lawatan: Number(r[4]) || 0, aktif: r[5] !== 'Tidak' }; });
-  const masuk = set.getRange(5, 9, 7, 1).getValues().map(function (r) { return r[0]; }).filter(String);
-  const keluar = set.getRange(5, 10, 7, 1).getValues().map(function (r) { return r[0]; }).filter(String);
-  return { items: items, ahli: ahli, kategori: { Masuk: masuk, Keluar: keluar } };
+    .map(function (r) {
+      return { nama: r[0], mula: fmtMonth_(r[1]), tamat: fmtMonth_(r[2]), kelab: Number(r[3]) || 0,
+               lawatan: Number(r[4]) || 0, aktif: r[5] !== 'Tidak' };
+    });
+  const kat = set.getRange(5, 9, 11, 1).getValues().map(function (r) { return String(r[0]); });
+  return {
+    items: items, ahli: ahli,
+    lawatanAkhir: fmtMonth_(set.getRange(21, 2).getValue()),
+    kategori: { Masuk: kat.slice(1, 4), Keluar: kat.slice(4) }
+  };
 }
 
-/** Tambah satu atau lebih transaksi. rows: [{tarikh:'YYYY-MM-DD', jenis, kategori, ahli, butiran, jumlah}] */
+/**
+ * Tambah transaksi. rows: [{tarikh:'YYYY-MM-DD', ahli, butiran, kategori, bulan, kelab, lawatan, lain, keluar}]
+ */
 function addTransactions(pin, rows) {
   checkPin_(pin);
   if (!rows || !rows.length || rows.length > 50) throw new Error('Data tidak sah');
@@ -64,28 +107,33 @@ function addTransactions(pin, rows) {
   try {
     const tx = sheet_(SHEET_TX);
     let n = lastRow_(tx);
-    const out = [];
+    let seq = maxId_(tx, n);
+    const ids = [];
     rows.forEach(function (x) {
-      const jumlah = Number(x.jumlah);
-      if (!(jumlah > 0) || jumlah > 1000000) throw new Error('Jumlah tidak sah');
-      if (x.jenis !== 'Masuk' && x.jenis !== 'Keluar') throw new Error('Jenis tidak sah');
+      const kelab = num_(x.kelab), lawatan = num_(x.lawatan), lain = num_(x.lain), keluar = num_(x.keluar);
+      if (!(kelab + lawatan + lain + keluar > 0)) throw new Error('Jumlah tidak sah');
+      if (keluar > 0 && kelab + lawatan + lain > 0) throw new Error('Satu baris tidak boleh masuk dan keluar serentak');
       if (!/^\d{4}-\d{2}-\d{2}$/.test(x.tarikh)) throw new Error('Tarikh tidak sah');
+      if (x.bulan && !/^\d{4}-\d{2}(:\d+(\.\d+)?)?(, \d{4}-\d{2}(:\d+(\.\d+)?)?)*$/.test(x.bulan)) throw new Error('Format bulan tidak sah');
+      const id = 'M' + ('0000' + (++seq)).slice(-4);
       n++;
-      const id = nextId_(tx, n);
       const d = x.tarikh.split('-');
-      tx.getRange(n, 1, 1, 7).setValues([[
-        id, new Date(+d[0], +d[1] - 1, +d[2]), x.jenis, clean_(x.kategori), clean_(x.ahli), clean_(x.butiran), jumlah
+      tx.getRange(n, 1, 1, NCOL).setValues([[
+        id, new Date(+d[0], +d[1] - 1, +d[2]), clean_(x.ahli), clean_(x.butiran), clean_(x.kategori),
+        x.bulan || '', kelab || '', lawatan || '', lain || '', keluar || ''
       ]]);
-      out.push(id);
+      ids.push(id);
     });
+    // susun ikut tarikh (kemudian ID) supaya pengasingan harian & baki sentiasa betul
+    tx.getRange(2, 1, n - 1, NCOL).sort([{ column: 2, ascending: true }, { column: 1, ascending: true }]);
     SpreadsheetApp.flush();
-    return out;
+    return ids;
   } finally {
     lock.releaseLock();
   }
 }
 
-/** Padam transaksi mengikut ID (baris dibuang, baki dikira semula oleh formula). */
+/** Padam transaksi mengikut ID. */
 function deleteTransaction(pin, id) {
   checkPin_(pin);
   const lock = LockService.getScriptLock();
@@ -97,9 +145,9 @@ function deleteTransaction(pin, id) {
     for (let i = 0; i < ids.length; i++) {
       if (ids[i][0] === id) {
         const start = i + 2;
-        const rest = start < last ? tx.getRange(start + 1, 1, last - start, 7).getValues() : [];
-        tx.getRange(start, 1, last - start + 1, 7).clearContent(); // kekalkan formula Baki & format
-        if (rest.length) tx.getRange(start, 1, rest.length, 7).setValues(rest);
+        const rest = start < last ? tx.getRange(start + 1, 1, last - start, NCOL).getValues() : [];
+        tx.getRange(start, 1, last - start + 1, NCOL).clearContent(); // kekalkan formula & format
+        if (rest.length) tx.getRange(start, 1, rest.length, NCOL).setValues(rest);
         return true;
       }
     }
@@ -111,20 +159,31 @@ function deleteTransaction(pin, id) {
 
 // ---- pembantu ----
 function lastRow_(tx) {
-  // baris terakhir yang ada ID di lajur A (helaian ada formula Baki sehingga baris 3000)
+  // baris terakhir yang ada ID di lajur A (formula Baki/Hari# wujud sehingga baris 3000)
   const v = tx.getRange(1, 1, tx.getMaxRows(), 1).getValues();
   for (let i = v.length - 1; i >= 0; i--) if (v[i][0] !== '') return i + 1;
   return 1;
 }
 
-function nextId_(tx, row) {
-  const prev = row > 2 ? String(tx.getRange(row - 1, 1).getValue()) : 'M0000';
-  const num = parseInt(prev.replace(/\D/g, ''), 10) || row - 1;
-  return 'M' + ('0000' + (num + 1)).slice(-4);
+function maxId_(tx, last) {
+  // ID tertinggi (baris disusun ikut tarikh, jadi baris terakhir bukan semestinya ID terbesar)
+  if (last < 2) return 0;
+  return tx.getRange(2, 1, last - 1, 1).getValues().reduce(function (m, r) {
+    return Math.max(m, parseInt(String(r[0]).replace(/\D/g, ''), 10) || 0);
+  }, 0);
+}
+
+function num_(v) {
+  const n = Number(v);
+  return isFinite(n) && n > 0 && n < 1000000 ? Math.round(n * 100) / 100 : 0;
 }
 
 function fmtDate_(v) {
   return v instanceof Date ? Utilities.formatDate(v, TZ, 'yyyy-MM-dd') : String(v);
+}
+
+function fmtMonth_(v) {
+  return v instanceof Date ? Utilities.formatDate(v, TZ, 'yyyy-MM') : '';
 }
 
 function clean_(s) {

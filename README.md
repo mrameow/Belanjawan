@@ -1,48 +1,83 @@
 # Belanjawan Kelab Guru
 
-Aplikasi telefon (Android) untuk rekod wang masuk/keluar kelab, yang menulis terus ke satu Google Sheet.
+Aplikasi telefon (Android) untuk rekod wang masuk/keluar kelab, yang menulis terus ke Google Sheet anda.
 
 ```
-Telefon Android (Chrome)  ──►  Web App (Apps Script)  ──►  Google Sheet "Belanjawan Kelab Guru"
-   borang + ringkasan          semak PIN, tulis baris        Transaksi · Ringkasan · Yuran Ahli · Tetapan
+Telefon Android (Chrome)  ──►  Web App (Apps Script)  ──►  Google Sheet anda
+   borang + senarai yuran       semak PIN, tulis baris       Ringkasan · Harian · Transaksi · Yuran Ahli · Tetapan
 ```
 
-## Apa dalam repo ini
+## Fail
 
 | Fail | Fungsi |
 |---|---|
-| `Belanjawan_Kelab_Guru_Baru.xlsx` | Helaian baharu: semua 282 transaksi 2025–2026 sudah dipindahkan, dengan Ringkasan, Yuran Ahli dan Tetapan |
-| `apps-script/Code.gs`, `Index.html`, `appsscript.json` | Aplikasi (pelayan + paparan telefon) |
-| `tools/migrate.py`, `tools/build_sheet.py` | Skrip yang menukar helaian lama kepada format baharu (boleh dijalankan semula) |
+| `Belanjawan_Kelab_Guru_Baru.xlsx` | Tab baharu untuk dimasukkan ke Google Sheet anda (212 baris 2025–2026 sudah dipindahkan) |
+| `apps-script/Code.gs`, `Index.html`, `appsscript.json` | Aplikasi |
+| `tools/migrate.py`, `tools/build_sheet.py` | Skrip yang menukar helaian lama kepada format baharu |
 
-Baki selepas migrasi = **RM887.02**, sama dengan baki akhir helaian lama. Dec 2025 berakhir RM4,540 = "Baki daripada 2025" dalam helaian 2026.
+Baki selepas migrasi = **RM887.02**, sama dengan helaian lama.
 
-## Pemasangan (sekali sahaja, ±10 minit)
+## Struktur data (penting)
 
-1. **Import helaian.** Buka <https://sheets.new>, *File → Import → Upload* `Belanjawan_Kelab_Guru_Baru.xlsx` → *Replace spreadsheet*. Namakan "Belanjawan Kelab Guru".
-2. **Pasang aplikasi.** Dalam helaian itu: *Extensions → Apps Script*.
-   - Padam kandungan `Code.gs`, tampal isi `apps-script/Code.gs`.
-   - Klik **+ → HTML**, namakan `Index`, tampal isi `apps-script/Index.html`.
-   - *Project Settings* → tandakan "Show appsscript.json", tampal isi `apps-script/appsscript.json`.
-3. **Tetapkan PIN.** Dalam editor, tambah baris sementara `function p(){ setPin('1234'); }` (tukar 1234), pilih `p` → **Run**, beri kebenaran. Kemudian padam fungsi `p`.
-4. **Deploy.** *Deploy → New deployment → Web app*; *Execute as: Me*; *Who has access: Anyone*. Salin URL `https://script.google.com/macros/s/…/exec`.
-   - Jika akaun sekolah (moe-dl.edu.my) menyekat "Anyone", minta pentadbir benarkan, atau buat helaian & skrip di akaun Gmail peribadi.
-5. **Pasang di Android.** Buka URL dalam Chrome → menu ⋮ → **Add to Home screen** (Tambah ke skrin utama). Masukkan PIN sekali; telefon akan mengingatinya.
+Satu baris dalam **Transaksi** = satu bayaran, seperti helaian lama:
+
+| Tarikh | Ahli | Butiran | Kategori | **Bulan Yuran** | Kelab | Lawatan | Masuk Lain | Keluar |
+|---|---|---|---|---|---|---|---|---|
+| 10 Okt 2026 | Amir | Amir (Mac 26, Apr 26) | Yuran | `2026-03, 2026-04` | 70 | 100 | | |
+
+* Nombor dalam kurungan (cth. `Amir (3, 4)`) ialah **bulan yang dibayar**. Ia kini disimpan dalam lajur **Bulan Yuran** supaya sistem tahu bulan mana sudah/belum dibayar.
+* Bayaran separa: `2025-12:30` (bulan 12 dibayar RM30). Dipaparkan sebagai ½.
+* **Harian**: satu baris = satu hari (terbaru di atas) dengan jumlah masuk, keluar dan baki hujung hari. Dalam **Transaksi**, setiap hari berselang-seli warna dan tarikh hanya jelas pada baris pertama hari itu.
+* **Yuran Ahli**: jadual ahli × bulan (✓ dibayar, ✗ belum, ½ separa) dan senarai bulan belum bayar bagi setiap ahli.
+
+## Pemasangan (sekali sahaja)
+
+### A. Masukkan tab baharu ke Google Sheet anda
+1. Muat naik `Belanjawan_Kelab_Guru_Baru.xlsx` ke Google Drive (atau terus dari komputer).
+2. Buka Google Sheet anda → **File → Import → Upload** → pilih fail → **Import location: _Insert new sheet(s)_** → Import data.
+   Lima tab baharu muncul; tab lama (2025, 2026, dsb.) tidak disentuh.
+
+### B. Pasang aplikasi
+1. Dalam Google Sheet itu: **Extensions → Apps Script**.
+2. Padam kandungan `Code.gs`, tampal isi `apps-script/Code.gs`.
+3. Klik **+ → HTML**, namakan tepat `Index`, tampal isi `apps-script/Index.html`.
+4. **Project Settings (⚙) → tandakan "Show appsscript.json manifest file"**, buka fail itu dan tampal isi `apps-script/appsscript.json`.
+5. Dalam `Code.gs`, tukar `1234` dalam `aturPin()` kepada PIN anda. Pilih fungsi **aturPin** di bar atas → **Run** → **Review permissions → pilih akaun → Advanced → Go to … (unsafe) → Allow**.
+   *Langkah ini wajib. Tanpa kebenaran, pautan web app tidak akan terbuka.*
+6. (Pilihan) pilih **testApp** → Run. Log mesti menunjukkan `OK: 212 transaksi, 15 ahli`.
+7. **Deploy → New deployment → ⚙ Web app** → *Execute as: Me*, *Who has access: Anyone* → Deploy. Salin URL yang berakhir `/exec`.
+8. Di Android: buka URL dalam Chrome → menu ⋮ → **Add to Home screen**. Masukkan PIN sekali.
+
+> Bila anda ubah kod kemudian, **Deploy → Manage deployments → ✏ → Version: New version → Deploy**. Jika tidak, URL lama masih menjalankan kod lama.
+
+## Pautan tidak boleh dibuka?
+
+Semak mengikut turutan:
+
+1. **Belum beri kebenaran** (punca paling biasa). Ulang langkah B5. Pautan akan menunjukkan "Authorization is required" jika terlepas.
+2. **URL salah.** Mesti berakhir `/exec`, bukan `/dev`.
+3. **"Who has access" tiada pilihan *Anyone*.** Akaun sekolah (moe-dl.edu.my) mungkin disekat pentadbir. Pilih *Anyone within …* dan buka pautan dalam Chrome yang log masuk dengan akaun sekolah yang sama, atau gunakan helaian + skrip di akaun Gmail peribadi.
+4. **"Sorry, unable to open the file at this time"** biasanya kerana beberapa akaun Google log masuk serentak. Cuba tetingkap Incognito, atau log keluar akaun lain.
+5. **Skrin kosong/ralat selepas ubah kod** → buat *New version* (nota di atas). Pastikan fail HTML dinamakan tepat `Index`.
+6. Jika masih gagal, hantar teks ralat atau tangkapan skrin yang anda nampak.
 
 ## Cara guna
 
-- **+** → *Masuk → Yuran ahli*: pilih ahli, tandakan bulan, Kelab/Lawatan. Dua baris (Kelab & Lawatan) ditulis dengan butiran `Nama (3, 4)` seperti format lama.
-- **+** → *Keluar* atau *Lain-lain*: pilih kategori, butiran, jumlah.
-- **Rekod**: cari/tapis, ketik satu baris untuk padam.
-- Edit terus di Google Sheet pun boleh; ketik *Muat semula* (tarik penyemak imbas) untuk lihat dalam app.
+- **+ → Masuk → Yuran ahli**: pilih ahli, ketik bulan yang dibayar (bulan belum bayar bertanda merah, sudah bayar hijau), tandakan Kelab/Lawatan. Satu baris ditulis dengan bulan tersimpan.
+- **+ → Keluar** atau **Lain-lain**: kategori, butiran, jumlah.
+- **Rekod**: dikumpul mengikut hari; cari/tapis; ketik satu baris untuk padam (perlu ketik dua kali).
+- **Yuran**: bulan belum bayar bagi setiap ahli.
+- Boleh juga edit terus dalam Google Sheet. Selepas tambah baris baru secara manual, pastikan lajur *Tarikh* diisi dan baris disusun ikut tarikh (Data → Sort) supaya pengasingan harian betul. App menyusun automatik.
 
 ## Keselamatan
 
-URL web app boleh dibuka sesiapa yang tahu pautannya, tetapi **semua data dilindungi PIN** pada pelayan (tanpa PIN tiada data dihantar). Jangan kongsi PIN dalam kumpulan awam. PIN 4–8 digit; tukar dengan `setPin()` lagi. Untuk keselamatan lebih tinggi, tukar "Who has access" kepada akaun Google tertentu (Workspace).
+URL web app boleh dibuka sesiapa yang tahu pautannya, tetapi **semua data dilindungi PIN** pada pelayar dan pelayan. Jangan kongsi PIN atau URL dalam kumpulan awam. Tukar PIN dengan mengubah `aturPin()` dan Run semula.
 
 ## Had & perkara untuk disemak
 
-- Ini web app yang dipasang sebagai ikon (bukan fail `.apk`). Jika mahu `.apk`, ia boleh dibungkus (TWA) kemudian.
-- Tab **Yuran Ahli** ialah *anggaran*: tarikh Mula/Tamat ahli di tab *Tetapan* diteka daripada data lama (cth. Wafi tamat Mac 2026, Suhaimi Ogos 2025). Semak dan betulkan. Kuchai & Wafi ditetapkan Lawatan = 0 kerana data lama menunjukkan pengecualian/refund.
-- Tarikh helaian lama bercampur (sebahagian "bulan/hari" tertukar oleh Excel). Skrip migrasi membetulkannya dengan menyemak urutan baris; semak tab *Transaksi* untuk sebarang tarikh janggal.
-- Kategori ditetapkan secara automatik daripada kata kunci dalam butiran lama — boleh diubah terus dalam helaian.
+- Ini web app yang dipasang sebagai ikon, bukan fail `.apk`.
+- **Tarikh Mula/Tamat ahli** (tab Tetapan) diteka daripada data lama (cth. Wafi tamat Mac 2026, Suhaimi Ogos 2025, Boss Khairil Sep 2025). Semak, kerana ia menentukan bulan mana dikira "belum bayar".
+- **3 bayaran lama tiada bulan ditulis** ("Ustaz" lawatan RM100, "Hasnol" RM225, "Kuchai" RM315). Bulan diisi automatik pada bulan kosong terawal; semak lajur *Bulan Yuran* untuk baris ini.
+- Kuchai dan Wafi ditetapkan Lawatan = 0 (kadar 0 = dikecualikan) berdasarkan data lama; ubah di Tetapan jika salah.
+- Tarikh helaian lama bercampur (sebahagian bulan/hari tertukar oleh Excel); skrip migrasi membetulkannya. Semak tab Harian untuk tarikh janggal.
+- Kategori kos diteka daripada perkataan dalam butiran lama; boleh diubah dalam helaian.

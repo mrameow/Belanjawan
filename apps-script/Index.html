@@ -6,10 +6,10 @@
 <meta name="theme-color" content="#0F766E">
 <title>Belanjawan Kelab Guru</title>
 <style>
-:root{--bg:#F1F5F9;--card:#fff;--ink:#0F172A;--mute:#64748B;--line:#E2E8F0;--teal:#0F766E;--teal-d:#134E4A;--teal-l:#CCFBF1;
---in:#15803D;--in-l:#DCFCE7;--out:#B91C1C;--out-l:#FEE2E2;--shadow:0 1px 3px rgba(15,23,42,.08),0 4px 12px rgba(15,23,42,.05)}
-@media (prefers-color-scheme:dark){:root{--bg:#0B1220;--card:#131C2E;--ink:#E5E7EB;--mute:#94A3B8;--line:#24304A;--teal:#14B8A6;--teal-d:#0B3B38;--teal-l:#0F3A37;
---in:#4ADE80;--in-l:#11301F;--out:#F87171;--out-l:#3A1818;--shadow:none}}
+:root{--bg:#F1F5F9;--card:#fff;--ink:#0F172A;--mute:#64748B;--line:#E2E8F0;--teal:#0F766E;--teal-l:#CCFBF1;
+--in:#15803D;--in-l:#DCFCE7;--out:#B91C1C;--out-l:#FEE2E2;--amb:#B45309;--amb-l:#FEF3C7;--shadow:0 1px 3px rgba(15,23,42,.08),0 4px 12px rgba(15,23,42,.05)}
+@media (prefers-color-scheme:dark){:root{--bg:#0B1220;--card:#131C2E;--ink:#E5E7EB;--mute:#94A3B8;--line:#24304A;--teal:#14B8A6;--teal-l:#0F3A37;
+--in:#4ADE80;--in-l:#11301F;--out:#F87171;--out-l:#3A1818;--amb:#FBBF24;--amb-l:#3A2E10;--shadow:none}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
@@ -18,6 +18,7 @@ header h1{margin:0;font-size:18px;font-weight:700}
 header p{margin:2px 0 0;font-size:12px;opacity:.8}
 main{padding:0 16px;margin-top:-48px;max-width:640px;margin-inline:auto}
 .card{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:16px;margin-bottom:12px}
+.card.flush{padding:4px 16px}
 .bal small{color:var(--mute);font-size:12px;letter-spacing:.04em;text-transform:uppercase}
 .bal .v{font-size:32px;font-weight:800;color:var(--teal);margin:2px 0 10px;font-variant-numeric:tabular-nums}
 .pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -25,13 +26,16 @@ main{padding:0 16px;margin-top:-48px;max-width:640px;margin-inline:auto}
 .pill b{display:block;font-size:17px;font-variant-numeric:tabular-nums}.pill span{font-size:12px;color:var(--mute)}
 .pill.in{background:var(--in-l)}.pill.in b{color:var(--in)}.pill.out{background:var(--out-l)}.pill.out b{color:var(--out)}
 h2{font-size:13px;margin:18px 4px 8px;color:var(--mute);text-transform:uppercase;letter-spacing:.05em}
+.day{display:flex;justify-content:space-between;align-items:baseline;margin:18px 4px 6px;font-size:13px;font-weight:700;color:var(--ink)}
+.day span{font-weight:600;font-variant-numeric:tabular-nums}.day .p{color:var(--in)}.day .n{color:var(--out)}
 .row{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
 .row:last-child{border:0}
 .ico{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-weight:800;flex:none}
 .ico.Masuk{background:var(--in-l);color:var(--in)}.ico.Keluar{background:var(--out-l);color:var(--out)}
 .row .t{flex:1;min-width:0}.row .t b{display:block;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .row .t span{font-size:12px;color:var(--mute)}
-.amt{font-weight:700;font-variant-numeric:tabular-nums}.amt.Masuk{color:var(--in)}.amt.Keluar{color:var(--out)}
+.amt{font-weight:700;font-variant-numeric:tabular-nums;text-align:right}.amt small{display:block;font-weight:500;font-size:11px;color:var(--mute)}
+.amt.Masuk{color:var(--in)}.amt.Keluar{color:var(--out)}
 .chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
 .chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:8px 14px;font:inherit;white-space:nowrap;flex:none}
 .chip.on{background:var(--teal);border-color:var(--teal);color:#fff}
@@ -48,19 +52,27 @@ nav button.on{color:var(--teal);font-weight:700}nav svg{display:block;margin:0 a
 .seg button{border:0;background:none;padding:10px;border-radius:9px;font:inherit;color:var(--mute);font-weight:600}
 .seg button.on{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
 .seg button.on.Masuk{color:var(--in)}.seg button.on.Keluar{color:var(--out)}
-.months{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
-.months button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:9px 0;font:inherit;font-size:13px}
-.months button.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+.yr{display:flex;align-items:center;justify-content:space-between;margin:12px 0 6px}.yr b{font-size:15px}.yr button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;width:40px;height:34px;font:inherit}
+.months{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.months button{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:10px 0;font:inherit;font-size:14px;line-height:1.2}
+.months button small{display:block;font-size:10px;color:var(--mute)}
+.months button.paid{background:var(--in-l);color:var(--in);border-color:transparent}.months button.paid small{color:var(--in)}
+.months button.due{border-color:var(--out);color:var(--out)}.months button.due small{color:var(--out)}
+.months button.part{border-color:var(--amb);color:var(--amb)}
+.months button.sel{background:var(--teal);color:#fff;border-color:var(--teal)}.months button.sel small{color:#fff}
 .chk{display:flex;align-items:center;gap:10px;padding:10px 0}.chk input[type=checkbox]{width:22px;height:22px;flex:none;padding:0;accent-color:var(--teal)}.chk span{flex:1}.chk input[type=number]{width:90px}
 .go{width:100%;border:0;background:var(--teal);color:#fff;font:inherit;font-weight:700;padding:15px;border-radius:14px;margin-top:16px}
-.go:disabled{opacity:.5}
+.go:disabled{opacity:.5}.go.del{background:var(--out-l);color:var(--out)}
 .ghost{width:100%;border:0;background:none;color:var(--mute);padding:12px;font:inherit}
-.del{color:var(--out)}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(150px + env(safe-area-inset-bottom));background:#0F172A;color:#fff;padding:10px 16px;border-radius:12px;z-index:50;display:none;max-width:90%}
 .empty,.err{text-align:center;color:var(--mute);padding:28px 8px}.err{color:var(--out)}
 .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;background:var(--teal)}
 .lock{max-width:340px;margin:20vh auto 0;text-align:center}.lock h1{color:var(--teal)}
 .lock input{text-align:center;font-size:24px;letter-spacing:.4em}
+.mchip{display:inline-block;font-size:12px;font-weight:600;border-radius:8px;padding:3px 8px;margin:3px 4px 0 0;background:var(--out-l);color:var(--out)}
+.mchip.part{background:var(--amb-l);color:var(--amb)}
+.ok{color:var(--in);font-size:13px}
+.alert{display:flex;gap:12px;align-items:center;cursor:pointer}.alert .ico{background:var(--amb-l);color:var(--amb)}
 .hide{display:none!important}
 </style>
 </head>
@@ -85,7 +97,8 @@ nav button.on{color:var(--teal);font-weight:700}nav svg{display:block;margin:0 a
         <div class="pill out"><b id="mOut">RM0</b><span>Keluar bulan ini</span></div>
       </div>
     </div>
-    <h2>Terkini</h2><div class="card" id="recent"></div>
+    <div class="card alert hide" id="dueCard"><div class="ico">!</div><div class="t" style="flex:1"><b id="dueT"></b><div id="dueS" style="font-size:12px;color:var(--mute)"></div></div>›</div>
+    <h2>Terkini</h2><div class="card flush" id="recent"></div>
     <h2>Perbelanjaan ikut kategori</h2><div class="card" id="cats"></div>
   </section>
 
@@ -98,7 +111,7 @@ nav button.on{color:var(--teal);font-weight:700}nav svg{display:block;margin:0 a
   </section>
 
   <section id="v-ahli" class="hide" style="margin-top:56px">
-    <div class="card"><b>Yuran dibayar setakat ini</b><div id="ahli"></div></div>
+    <div class="card flush" id="ahli"></div>
   </section>
 </main>
 
@@ -106,19 +119,19 @@ nav button.on{color:var(--teal);font-weight:700}nav svg{display:block;margin:0 a
 <nav>
   <button data-v="home" class="on"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8v10H3z"/></svg>Ringkasan</button>
   <button data-v="list"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>Rekod</button>
-  <button data-v="ahli"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-7 7-7s7 3 7 7M17 4a4 4 0 010 8M22 21c0-3-2-5-4-6"/></svg>Ahli</button>
+  <button data-v="ahli"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-7 7-7s7 3 7 7M17 4a4 4 0 010 8M22 21c0-3-2-5-4-6"/></svg>Yuran</button>
 </nav>
 
 <div class="sheet" id="sheet"><div class="in">
   <div class="seg" id="mode"><button data-m="Masuk" class="on Masuk">Masuk</button><button data-m="Keluar">Keluar</button></div>
-  <div id="f-yuran-wrap">
-    <div class="chips" style="margin-top:12px"><button class="chip on" data-t="yuran">Yuran ahli</button><button class="chip" data-t="biasa">Lain-lain</button></div>
-  </div>
-  <label>Tarikh</label><input type="date" id="f-date">
+  <div id="f-type-wrap"><div class="chips" style="margin-top:12px"><button class="chip on" data-t="yuran">Yuran ahli</button><button class="chip" data-t="biasa">Lain-lain</button></div></div>
+  <label>Tarikh bayaran</label><input type="date" id="f-date">
 
   <div id="f-yuran">
     <label>Ahli</label><select id="y-ahli"></select>
-    <label>Bulan dibayar <span id="y-yr"></span></label><div class="months" id="y-months"></div>
+    <div class="yr"><button type="button" id="yPrev">‹</button><b id="yYear"></b><button type="button" id="yNext">›</button></div>
+    <div class="months" id="y-months"></div>
+    <p id="y-sum" style="font-size:12px;color:var(--mute);margin:8px 0 0"></p>
     <div class="chk"><input type="checkbox" id="y-k" checked><span>Yuran Kelab</span><input type="number" id="y-kv" inputmode="decimal"></div>
     <div class="chk"><input type="checkbox" id="y-l"><span>Yuran Lawatan</span><input type="number" id="y-lv" inputmode="decimal"></div>
   </div>
@@ -141,13 +154,19 @@ nav button.on{color:var(--teal);font-weight:700}nav svg{display:block;margin:0 a
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const RM = n => (n < 0 ? '-' : '') + 'RM' + Math.abs(n).toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 const MON = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogo','Sep','Okt','Nov','Dis'];
+const HARI = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let PIN = '', D = null, state = {f: '', q: '', mode: 'Masuk', type: 'yuran', months: new Set()};
+let PIN = '', D = null;
+const state = {f: '', q: '', mode: 'Masuk', type: 'yuran', year: new Date().getFullYear(), sel: new Set()};
 const store = {get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} }};
 
-const run = (fn, ...a) => new Promise((ok, no) => google.script.run.withSuccessHandler(ok).withFailureHandler(e => no(new Error(e.message || e))) [fn](...a));
+const run = (fn, ...a) => new Promise((ok, no) => google.script.run.withSuccessHandler(ok).withFailureHandler(e => no(new Error(e.message || e)))[fn](...a));
 function toast(t) { const e = $('#toast'); e.textContent = t; e.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => e.style.display = 'none', 2600); }
 const today = () => { const d = new Date(); return new Date(d - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); };
+const mIdx = s => +s.slice(0, 4) * 12 + (+s.slice(5, 7) - 1);          // 'YYYY-MM' -> nombor bulan
+const mKey = i => `${Math.floor(i / 12)}-${String(i % 12 + 1).padStart(2, '0')}`;
+const mLabel = k => `${MON[+k.slice(5, 7) - 1]} ${k.slice(2, 4)}`;
+const income = x => x.kelab + x.lawatan + x.lain;
 
 async function login(pin) {
   PIN = pin; $('#pinErr').textContent = '';
@@ -161,133 +180,182 @@ async function load() {
   $('#sync').textContent = 'Dikemas kini ' + new Date().toLocaleTimeString('ms-MY', {hour: '2-digit', minute: '2-digit'});
 }
 
+/* ---- logik yuran: bulan dibayar / belum bayar ---- */
+function paidMap(nama, cat) {           // {'2026-03': 'full' | amaun separa}
+  const m = {};
+  D.items.filter(x => x.ahli === nama && x[cat] > 0 && x.bulan).forEach(x => x.bulan.split(', ').forEach(t => {
+    const [k, a] = t.split(':'); if (!(k in m) || m[k] !== 'full') m[k] = a ? +a : 'full';
+  }));
+  return m;
+}
+function period(a, cat) {               // [indeks bulan] yang wajib dibayar
+  const rate = cat === 'kelab' ? a.kelab : a.lawatan; if (!rate) return [];
+  const now = mIdx(today().slice(0, 7)); let end = now;
+  if (cat === 'lawatan' && D.lawatanAkhir) end = Math.min(end, mIdx(D.lawatanAkhir));
+  if (a.tamat) end = Math.min(end, mIdx(a.tamat));
+  const out = []; for (let i = mIdx(a.mula || '2025-06'); i <= end; i++) out.push(i); return out;
+}
+function unpaid(a, cat) {
+  const pm = paidMap(a.nama, cat);
+  return period(a, cat).map(i => ({k: mKey(i), p: pm[mKey(i)]})).filter(o => o.p !== 'full');
+}
+
+/* ---- paparan ---- */
 function render() {
-  const items = D.items;
-  const sum = (a, j) => a.filter(x => x.jenis === j).reduce((s, x) => s + x.jumlah, 0);
-  $('#bal').textContent = RM(sum(items, 'Masuk') - sum(items, 'Keluar'));
+  const items = D.items, sum = f => items.reduce((s, x) => s + f(x), 0);
+  $('#bal').textContent = RM(sum(income) - sum(x => x.keluar));
   const ym = today().slice(0, 7), mo = items.filter(x => x.tarikh.startsWith(ym));
-  $('#mIn').textContent = RM(sum(mo, 'Masuk')); $('#mOut').textContent = RM(sum(mo, 'Keluar'));
+  $('#mIn').textContent = RM(mo.reduce((s, x) => s + income(x), 0)); $('#mOut').textContent = RM(mo.reduce((s, x) => s + x.keluar, 0));
   const sorted = [...items].sort((a, b) => b.tarikh.localeCompare(a.tarikh) || b.i - a.i);
   $('#recent').innerHTML = sorted.slice(0, 6).map(rowHtml).join('') || '<div class="empty">Tiada rekod</div>';
 
-  const keluar = items.filter(x => x.jenis === 'Keluar'), tot = sum(keluar, 'Keluar') || 1, by = {};
-  keluar.forEach(x => by[x.kategori || 'Pelbagai'] = (by[x.kategori || 'Pelbagai'] || 0) + x.jumlah);
+  const keluar = items.filter(x => x.keluar > 0), tot = keluar.reduce((s, x) => s + x.keluar, 0) || 1, by = {};
+  keluar.forEach(x => by[x.kategori || 'Pelbagai'] = (by[x.kategori || 'Pelbagai'] || 0) + x.keluar);
   $('#cats').innerHTML = Object.entries(by).sort((a, b) => b[1] - a[1]).map(([k, v]) =>
     `<div style="margin:10px 0"><div style="display:flex;justify-content:space-between"><span>${esc(k)}</span><b>${RM(v)}</b></div><div class="bar"><i style="width:${v / tot * 100}%"></i></div></div>`).join('');
 
   renderList(sorted); renderAhli();
 }
 function rowHtml(x) {
+  const jenis = x.keluar > 0 ? 'Keluar' : 'Masuk', jum = jenis === 'Keluar' ? x.keluar : income(x);
+  const split = x.kelab && x.lawatan ? `<small>K ${x.kelab} · L ${x.lawatan}</small>` : '';
   const d = x.tarikh.split('-');
-  return `<div class="row" data-i="${x.i}"><div class="ico ${x.jenis}">${x.jenis === 'Masuk' ? '↓' : '↑'}</div>
-  <div class="t"><b>${esc(x.butiran || x.kategori)}</b><span>${+d[2]} ${MON[d[1] - 1]} ${d[0]} · ${esc(x.kategori)}</span></div>
-  <div class="amt ${x.jenis}">${x.jenis === 'Masuk' ? '+' : '-'}${RM(x.jumlah).replace('RM', '')}</div></div>`;
+  return `<div class="row" data-i="${x.i}"><div class="ico ${jenis}">${jenis === 'Masuk' ? '↓' : '↑'}</div>
+  <div class="t"><b>${esc(x.butiran || x.kategori)}</b><span>${+d[2]} ${MON[d[1] - 1]} · ${esc(x.kategori)}</span></div>
+  <div class="amt ${jenis}">${jenis === 'Masuk' ? '+' : '-'}${RM(jum).replace('RM', '')}${split}</div></div>`;
 }
 function renderList(sorted) {
   sorted = sorted || [...D.items].sort((a, b) => b.tarikh.localeCompare(a.tarikh) || b.i - a.i);
   const q = state.q.toLowerCase();
-  const r = sorted.filter(x => (!state.f || x.jenis === state.f) && (!q || (x.butiran + ' ' + x.ahli + ' ' + x.kategori).toLowerCase().includes(q)));
-  let html = '', cur = '';
-  r.slice(0, 300).forEach(x => {
-    const m = x.tarikh.slice(0, 7);
-    if (m !== cur) { if (cur) html += '</div>'; cur = m; html += `<h2>${MON[m.slice(5) - 1]} ${m.slice(0, 4)}</h2><div class="card">`; }
-    html += rowHtml(x);
-  });
-  $('#list').innerHTML = (html ? html + '</div>' : '<div class="empty">Tiada rekod</div>');
+  const r = sorted.filter(x => (!state.f || (state.f === 'Keluar') === (x.keluar > 0)) &&
+    (!q || (x.butiran + ' ' + x.ahli + ' ' + x.kategori).toLowerCase().includes(q)));
+  const days = []; r.slice(0, 400).forEach(x => { const d = days[days.length - 1]; d && d.t === x.tarikh ? d.r.push(x) : days.push({t: x.tarikh, r: [x]}); });
+  $('#list').innerHTML = days.map(d => {
+    const [y, m, dd] = d.t.split('-'), net = d.r.reduce((s, x) => s + income(x) - x.keluar, 0);
+    return `<div class="day"><div>${HARI[new Date(+y, m - 1, +dd).getDay()]}, ${+dd} ${MON[m - 1]} ${y}</div><span class="${net < 0 ? 'n' : 'p'}">${net < 0 ? '-' : '+'}${RM(net).replace(/RM|-/g, '')}</span></div>
+      <div class="card flush">${d.r.map(rowHtml).join('')}</div>`;
+  }).join('') || '<div class="empty">Tiada rekod</div>';
 }
 function renderAhli() {
-  const rows = D.ahli.map(a => {
-    const p = k => D.items.filter(x => x.jenis === 'Masuk' && x.kategori === k && x.ahli === a.nama).reduce((s, x) => s + x.jumlah, 0);
-    return {a, k: p('Yuran Kelab'), l: p('Yuran Lawatan')};
-  });
-  $('#ahli').innerHTML = rows.map(r => `<div class="row"><div class="ico Masuk">${esc(r.a.nama[0])}</div>
-    <div class="t"><b>${esc(r.a.nama)}${r.a.aktif ? '' : ' (tamat)'}</b><span>Kelab ${RM(r.k)} · Lawatan ${RM(r.l)}</span></div>
-    <div class="amt Masuk">${r.a.kelab ? Math.floor(r.k / r.a.kelab) : 0} bln</div></div>`).join('');
+  const rows = D.ahli.map(a => ({a, k: unpaid(a, 'kelab'), l: unpaid(a, 'lawatan')})).sort((x, y) => (y.k.length + y.l.length) - (x.k.length + x.l.length));
+  const chips = u => u.map(o => `<span class="mchip ${o.p === 'full' || o.p == null ? '' : 'part'}">${mLabel(o.k)}${o.p != null && o.p !== 'full' ? ' ½' : ''}</span>`).join('');
+  $('#ahli').innerHTML = rows.map(r => `<div class="row" style="align-items:flex-start"><div class="ico ${r.k.length + r.l.length ? 'Keluar' : 'Masuk'}">${esc(r.a.nama[0])}</div>
+    <div class="t" style="white-space:normal"><b>${esc(r.a.nama)}${r.a.aktif ? '' : ' (tamat)'}</b>
+    <span>Kelab</span> ${r.k.length ? chips(r.k) : '<span class="ok">✓ selesai</span>'}<br>
+    ${r.a.lawatan ? `<span>Lawatan</span> ${r.l.length ? chips(r.l) : '<span class="ok">✓ selesai</span>'}` : ''}</div></div>`).join('');
+  const due = rows.filter(r => r.k.length + r.l.length), total = due.reduce((s, r) => s + r.k.length + r.l.length, 0);
+  $('#dueCard').classList.toggle('hide', !due.length);
+  $('#dueT').textContent = `${due.length} ahli ada yuran belum dibayar`; $('#dueS').textContent = `${total} bulan kesemuanya - ketik untuk lihat`;
 }
 
 /* ---- tambah ---- */
 function openSheet() {
   $('#f-date').value = today();
-  const y = new Date().getFullYear(); $('#y-yr').textContent = '(' + y + ')';
   $('#y-ahli').innerHTML = D.ahli.filter(a => a.aktif).map(a => `<option>${esc(a.nama)}</option>`).join('');
   $('#b-ahli').innerHTML = '<option value="">-</option>' + D.ahli.map(a => `<option>${esc(a.nama)}</option>`).join('');
-  state.months = new Set([new Date().getMonth() + 1]);
-  $('#y-months').innerHTML = MON.map((m, i) => `<button type="button" data-m="${i + 1}" class="${state.months.has(i + 1) ? 'on' : ''}">${m}</button>`).join('');
   $('#b-but').value = ''; $('#b-jum').value = '';
-  setMode('Masuk'); syncRates(); $('#sheet').classList.add('open');
+  setMode('Masuk'); pickAhli(); $('#sheet').classList.add('open');
+}
+function curAhli() { return D.ahli.find(x => x.nama === $('#y-ahli').value) || {nama: '', kelab: 35, lawatan: 50}; }
+function pickAhli() {
+  const a = curAhli(); $('#y-kv').value = a.kelab || 35; $('#y-lv').value = a.lawatan || 50;
+  const u = unpaid(a, 'kelab'); state.sel = new Set(u.length ? [u[0].k] : [mKey(mIdx(today().slice(0, 7)))]);
+  state.year = +[...state.sel][0].slice(0, 4); drawMonths();
+}
+function drawMonths() {
+  const a = curAhli(), pk = paidMap(a.nama, 'kelab'), due = new Set(unpaid(a, 'kelab').map(o => o.k));
+  $('#yYear').textContent = state.year;
+  $('#y-months').innerHTML = MON.map((m, i) => {
+    const k = `${state.year}-${String(i + 1).padStart(2, '0')}`;
+    const cls = state.sel.has(k) ? 'sel' : pk[k] === 'full' ? 'paid' : k in pk ? 'part' : due.has(k) ? 'due' : '';
+    const note = pk[k] === 'full' ? '✓ dibayar' : k in pk ? 'separa' : due.has(k) ? 'belum' : '&nbsp;';
+    return `<button type="button" data-k="${k}" class="${cls}">${m}<small>${state.sel.has(k) ? '✓ dipilih' : note}</small></button>`;
+  }).join('');
+  const ks = [...state.sel].sort();
+  $('#y-sum').textContent = ks.length ? `${ks.length} bulan: ${ks.map(mLabel).join(', ')}` : 'Pilih bulan yang dibayar';
 }
 function setMode(m) {
   state.mode = m;
   $$('#mode button').forEach(b => b.className = b.dataset.m === m ? 'on ' + m : '');
-  $('#f-yuran-wrap').classList.toggle('hide', m !== 'Masuk');
+  $('#f-type-wrap').classList.toggle('hide', m !== 'Masuk');
   setType(m === 'Masuk' ? state.type : 'biasa');
 }
 function setType(t) {
   state.type = t;
-  $$('#f-yuran-wrap .chip').forEach(c => c.classList.toggle('on', c.dataset.t === t));
-  $('#f-yuran').classList.toggle('hide', t !== 'yuran' || state.mode !== 'Masuk');
-  $('#f-biasa').classList.toggle('hide', !(t === 'biasa' || state.mode === 'Keluar'));
-  const cats = D.kategori[state.mode].filter(k => !k.startsWith('Yuran'));
-  $('#b-kat').innerHTML = cats.map(k => `<option>${esc(k)}</option>`).join('');
-}
-function syncRates() {
-  const a = D.ahli.find(x => x.nama === $('#y-ahli').value) || {kelab: 35, lawatan: 50};
-  $('#y-kv').value = a.kelab; $('#y-lv').value = a.lawatan || 50;
+  $$('#f-type-wrap .chip').forEach(c => c.classList.toggle('on', c.dataset.t === t));
+  const yuran = t === 'yuran' && state.mode === 'Masuk';
+  $('#f-yuran').classList.toggle('hide', !yuran); $('#f-biasa').classList.toggle('hide', yuran);
+  $('#b-kat').innerHTML = D.kategori[state.mode].map(k => `<option>${esc(k)}</option>`).join('');
 }
 async function save() {
   const tarikh = $('#f-date').value, rows = [];
   if (!tarikh) return toast('Pilih tarikh');
   if (state.mode === 'Masuk' && state.type === 'yuran') {
-    const n = state.months.size, nama = $('#y-ahli').value, ms = [...state.months].sort((a, b) => a - b).join(', ');
-    if (!n) return toast('Pilih sekurang-kurangnya satu bulan');
-    if (!$('#y-k').checked && !$('#y-l').checked) return toast('Pilih Kelab atau Lawatan');
-    const add = (kat, per) => rows.push({tarikh, jenis: 'Masuk', kategori: kat, ahli: nama, butiran: `${nama} (${ms})`, jumlah: +(per * n).toFixed(2)});
-    if ($('#y-k').checked) add('Yuran Kelab', +$('#y-kv').value);
-    if ($('#y-l').checked) add('Yuran Lawatan', +$('#y-lv').value);
+    const ks = [...state.sel].sort(), nama = $('#y-ahli').value;
+    if (!ks.length) return toast('Pilih sekurang-kurangnya satu bulan');
+    const k = $('#y-k').checked, l = $('#y-l').checked;
+    if (!k && !l) return toast('Pilih Kelab atau Lawatan');
+    rows.push({tarikh, ahli: nama, butiran: `${nama} (${ks.map(mLabel).join(', ')})`, kategori: 'Yuran', bulan: ks.join(', '),
+      kelab: k ? +(+$('#y-kv').value * ks.length).toFixed(2) : 0, lawatan: l ? +(+$('#y-lv').value * ks.length).toFixed(2) : 0});
   } else {
     const jumlah = +$('#b-jum').value, butiran = $('#b-but').value.trim();
     if (!(jumlah > 0)) return toast('Masukkan jumlah');
     if (!butiran) return toast('Masukkan butiran');
-    rows.push({tarikh, jenis: state.mode, kategori: $('#b-kat').value, ahli: $('#b-ahli').value, butiran, jumlah});
+    rows.push({tarikh, ahli: $('#b-ahli').value, butiran, kategori: $('#b-kat').value, [state.mode === 'Masuk' ? 'lain' : 'keluar']: jumlah});
   }
-  if (rows.some(r => !(r.jumlah > 0))) return toast('Jumlah tidak sah');
   const btn = $('#save'); btn.disabled = true; btn.textContent = 'Menyimpan…';
   try { await run('addTransactions', PIN, rows); await load(); $('#sheet').classList.remove('open'); toast('Disimpan ke Google Sheet ✓'); }
   catch (e) { toast(e.message); }
   btn.disabled = false; btn.textContent = 'Simpan';
 }
 
-/* ---- event ---- */
+/* ---- event (pengendali tidak memulangkan nilai: elak preventDefault tersembunyi) ---- */
 $('#pinGo').onclick = () => login($('#pin').value);
 $('#pin').onkeydown = e => { if (e.key === 'Enter') login($('#pin').value); };
-$$('nav button').forEach(b => b.onclick = () => {
-  $$('nav button').forEach(x => x.classList.toggle('on', x === b));
-  ['home', 'list', 'ahli'].forEach(v => $('#v-' + v).classList.toggle('hide', v !== b.dataset.v));
+function showView(v) {
+  $$('nav button').forEach(x => x.classList.toggle('on', x.dataset.v === v));
+  ['home', 'list', 'ahli'].forEach(id => $('#v-' + id).classList.toggle('hide', id !== v));
   window.scrollTo(0, 0);
-});
+}
+$$('nav button').forEach(b => b.onclick = () => showView(b.dataset.v));
+$('#dueCard').onclick = () => showView('ahli');
 $('#fab').onclick = openSheet;
 $('#cancel').onclick = () => $('#sheet').classList.remove('open');
 $('#sheet').onclick = e => { if (e.target.id === 'sheet') $('#sheet').classList.remove('open'); };
 $('#detail').onclick = e => { if (e.target.id === 'detail') $('#detail').classList.remove('open'); };
 $('#mode').onclick = e => { if (e.target.dataset.m) setMode(e.target.dataset.m); };
-$('#f-yuran-wrap').onclick = e => { if (e.target.dataset.t) setType(e.target.dataset.t); };
-$('#y-ahli').onchange = syncRates;
-$('#y-months').onclick = e => { const m = +e.target.dataset.m; if (!m) return; state.months.has(m) ? state.months.delete(m) : state.months.add(m); e.target.classList.toggle('on'); };
+$('#f-type-wrap').onclick = e => { if (e.target.dataset.t) setType(e.target.dataset.t); };
+$('#y-ahli').onchange = pickAhli;
+$('#yPrev').onclick = () => { state.year--; drawMonths(); };
+$('#yNext').onclick = () => { state.year++; drawMonths(); };
+$('#y-months').onclick = e => {
+  const b = e.target.closest('button'); if (!b) return;
+  state.sel.has(b.dataset.k) ? state.sel.delete(b.dataset.k) : state.sel.add(b.dataset.k); drawMonths();
+};
 $('#save').onclick = save;
 $('#q').oninput = e => { state.q = e.target.value; renderList(); };
-$('#filt').onclick = e => { if (!e.target.dataset.f && e.target.dataset.f !== '') return; state.f = e.target.dataset.f; $$('#filt .chip').forEach(c => c.classList.toggle('on', c === e.target)); renderList(); };
+$('#filt').onclick = e => {
+  if (e.target.dataset.f === undefined) return;
+  state.f = e.target.dataset.f; $$('#filt .chip').forEach(c => c.classList.toggle('on', c === e.target)); renderList();
+};
 document.addEventListener('click', e => {
   const r = e.target.closest('.row[data-i]'); if (!r) return;
-  const x = D.items[+r.dataset.i];
-  $('#dBody').innerHTML = `<h2 style="margin:0 0 8px">${esc(x.jenis)} · ${esc(x.kategori)}</h2>
-    <div class="amt ${x.jenis}" style="font-size:28px">${RM(x.jumlah)}</div>
-    <p>${esc(x.butiran)}</p><p style="color:var(--mute)">${esc(x.tarikh)}${x.ahli ? ' · ' + esc(x.ahli) : ''} · ${esc(x.id)}</p>
-    <button class="go del" style="background:var(--out-l);color:var(--out)" id="delBtn">Padam rekod</button><button class="ghost" id="dClose">Tutup</button>`;
+  const x = D.items[+r.dataset.i], jenis = x.keluar > 0 ? 'Keluar' : 'Masuk';
+  const detail = [x.kelab && `Kelab ${RM(x.kelab)}`, x.lawatan && `Lawatan ${RM(x.lawatan)}`, x.lain && `Lain ${RM(x.lain)}`].filter(Boolean).join(' · ');
+  $('#dBody').innerHTML = `<h2 style="margin:0 0 8px">${jenis} · ${esc(x.kategori)}</h2>
+    <div class="amt ${jenis}" style="font-size:28px;text-align:left">${RM(jenis === 'Keluar' ? x.keluar : income(x))}</div>
+    <p>${esc(x.butiran)}</p>
+    <p style="color:var(--mute)">${esc(x.tarikh)}${x.ahli ? ' · ' + esc(x.ahli) : ''} · ${esc(x.id)}${detail ? '<br>' + esc(detail) : ''}${x.bulan ? '<br>Bulan: ' + esc(x.bulan) : ''}</p>
+    <button class="go del" id="delBtn">Padam rekod</button><button class="ghost" id="dClose">Tutup</button>`;
   $('#detail').classList.add('open');
   $('#dClose').onclick = () => $('#detail').classList.remove('open');
-  $('#delBtn').onclick = async () => {
-    if (!confirm('Padam rekod ini daripada Google Sheet?')) return;
-    try { await run('deleteTransaction', PIN, x.id); $('#detail').classList.remove('open'); await load(); toast('Dipadam'); } catch (err) { toast(err.message); }
+  let armed = false;
+  $('#delBtn').onclick = async () => {              // pengesahan dalam app (confirm() disekat dalam Apps Script)
+    const btn = $('#delBtn');
+    if (!armed) { armed = true; btn.textContent = 'Ketik sekali lagi untuk SAHKAN padam'; return; }
+    btn.disabled = true;
+    try { await run('deleteTransaction', PIN, x.id); $('#detail').classList.remove('open'); await load(); toast('Dipadam'); }
+    catch (err) { toast(err.message); btn.disabled = false; }
   };
 });
 
