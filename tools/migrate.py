@@ -17,7 +17,7 @@ import openpyxl
 
 AHLI = ["Amir", "Asnawi", "Bang Mie", "Boss Khairil", "Boss Wan", "Chang", "Hadi",
         "Hasnol", "Joe", "Khairiri", "Kuchai", "Suhaimi", "Ustaz", "Wafi", "Aiman"]
-ALIAS = {"Boss": "Boss Wan"}  # helaian 2025 tulis "Boss (6)"
+ALIAS = {"Boss": "Boss Khairil"}  # helaian 2025 tulis "Boss (6)"; sepadan tepat dengan tab Yuran Kelab (Boss Khairil)
 RATE = {"kelab": 35, "lawatan": 50}
 START = (2025, 6)  # bulan pertama rekod
 
@@ -95,12 +95,19 @@ def next_free(claimed, start=START):
     return y, m
 
 
-def assign_year(m, claimed_sets):
-    """Bulan >= 6 -> cuba 2025 dulu; jika sudah dituntut oleh ahli itu -> 2026, dst."""
-    y = 2025 if m >= 6 else 2026
-    while any((y, m) in c for c in claimed_sets):
-        y += 1
-    return y
+MULA = {"Aiman": (2025, 12)}  # Aiman masuk bulan 12 (tab "Conclusion")
+
+
+def year_options(ahli, tarikh, m):
+    """Tahun yang munasabah bagi satu bulan: tidak sebelum Mula ahli, antara -8 dan +6 bulan
+    daripada tarikh bayaran (longgarkan ke -15..+9 jika tiada), dan tidak melepasi 2026."""
+    lo = MULA.get(ahli, START)
+    pay = tarikh.year * 12 + tarikh.month - 1
+    for past, ahead in ((8, 6), (15, 9)):
+        ys = [y for y in (2025, 2026) if (y, m) >= lo and -past <= y * 12 + m - 1 - pay <= ahead]
+        if ys:
+            return ys
+    return []
 
 
 def parse(ws):
@@ -132,51 +139,165 @@ def parse(ws):
     return rows
 
 
-def fill_months(rows):
-    """Isi lajur Bulan. Mengikut tarikh bayaran supaya tuntutan bulan berurutan."""
+def fill_months(rows, tab=None):
+    """Isi lajur Bulan. tab = {(ahli, 'kelab'|'lawatan', 'YYYY-MM'): amaun} daripada tab Yuran Kelab
+    (bukti tambahan bila tahun tidak jelas). Mengembalikan (inferred, ambiguous)."""
+    tab = tab or {}
     claimed = {(a, k): set() for a in AHLI for k in ("kelab", "lawatan")}
-    inferred = []
+    inferred, ambiguous = [], []
     for x in sorted((x for x in rows if x.get("_raw")), key=lambda x: x["tarikh"]):
         cats = [k for k in ("kelab", "lawatan") if x[k]]
         rate = RATE[cats[0]]
         toks = month_tokens(x["butiran"], rate)
-        out = []
+        out, status = [], "pasti"
         if toks:
+            pay = x["tarikh"].year * 12 + x["tarikh"].month - 1
             for m, amt in toks:
-                y = assign_year(m, [claimed[(x["ahli"], k)] for k in cats])
+                ys = year_options(x["ahli"], x["tarikh"], m)
+                if len(ys) == 1:
+                    y = ys[0]
+                elif not ys:
+                    y, status = (2025 if m >= 6 else 2026), "tiada-calon"
+                else:
+                    hit = [yy for yy in ys if any(tab.get((x["ahli"], k, f"{yy}-{m:02d}")) for k in cats)]
+                    if len(hit) == 1:
+                        y = hit[0]  # tab anda sudah tanda bayar pada tahun ini
+                    else:
+                        y = min(ys, key=lambda yy: abs(yy * 12 + m - 1 - pay))
+                        ambiguous.append((x["tarikh"].isoformat(), x["butiran"], cats, f"bulan {m}", [f"{yy}-{m:02d}" for yy in ys]))
                 out.append((y, m, amt))
-        else:  # tiada bulan ditulis -> isi bulan kosong terawal ikut amaun
-            amount = x[cats[0]]
-            n, rem = int(amount // rate), amount % rate
-            cl = claimed[(x["ahli"], cats[0])]
-            for _ in range(n):
-                y, m = next_free(cl | {(o[0], o[1]) for o in out})
-                out.append((y, m, None))
-            if rem:
-                y, m = next_free(cl | {(o[0], o[1]) for o in out})
-                out.append((y, m, rem))
-            inferred.append((x["tarikh"].isoformat(), x["butiran"], cats, [f"{o[0]}-{o[1]:02d}" for o in out]))
+        else:  # tiada bulan ditulis -> JANGAN teka; ditanda untuk disemak pengguna
+            inferred.append((x["tarikh"].isoformat(), x["butiran"], cats, x[cats[0]]))
+            x["_toks"], x["bulan"], x["_status"] = [], "", "tanpa-bulan"
+            continue
         for k in cats:
             claimed[(x["ahli"], k)].update((y, m) for y, m, _ in out)
         x["bulan"] = ", ".join(f"{y}-{m:02d}" + (f":{a:g}" if a else "") for y, m, a in out)
-    return inferred
+        x["_toks"], x["_status"] = list(out), status
+    return inferred, ambiguous
+
+
+def read_tab(wb):
+    """Tab 'Yuran Kelab' lama -> {(ahli, 'kelab'|'lawatan', 'YYYY-MM'): amaun}. Digunakan sebagai bukti tahun."""
+    ws, tab, y, prev, cur = wb["Yuran Kelab"], {}, 2025, 0, None
+    for r in range(1, ws.max_row + 1):
+        v = ws.cell(r, 1).value
+        if isinstance(v, str) and v.startswith("Bulan "):
+            m = int(v.split()[1])
+            y += 1 if m < prev else 0
+            prev, cur = m, f"{y}-{m:02d}"
+        elif v and cur:
+            for k, col in (("kelab", 2), ("lawatan", 3)):
+                a = ws.cell(r, col).value
+                if isinstance(a, (int, float)) and a > 0:
+                    tab[(str(v), k, cur)] = float(a)
+    return tab
+
+
+def mi(y, m):
+    return y * 12 + m - 1
+
+
+def runs_of(tokens):
+    """[(y,m,amt)] -> senarai (mula(y,m), akhir(y,m), n, amaun_separa|None). Bulan berturutan digabung;
+    bulan separa sentiasa sebaris sendiri."""
+    out, cur = [], None
+    for y, m, amt in sorted(tokens, key=lambda t: mi(t[0], t[1])):
+        if amt is None and cur and cur["amt"] is None and mi(y, m) == mi(*cur["end"]) + 1:
+            cur["end"], cur["n"] = (y, m), cur["n"] + 1
+        else:
+            cur = {"start": (y, m), "end": (y, m), "n": 1, "amt": amt}
+            out.append(cur)
+    return out
+
+
+MON = ["Jan", "Feb", "Mac", "Apr", "Mei", "Jun", "Jul", "Ogo", "Sep", "Okt", "Nov", "Dis"]
+
+
+def label(r):
+    (y1, m1), (y2, m2) = r["start"], r["end"]
+    if (y1, m1) == (y2, m2):
+        t = f"{MON[m1 - 1]} {y1 % 100}"
+    elif y1 == y2:
+        t = f"{MON[m1 - 1]}\u2013{MON[m2 - 1]} {y1 % 100}"
+    else:
+        t = f"{MON[m1 - 1]} {y1 % 100}\u2013{MON[m2 - 1]} {y2 % 100}"
+    return t + (" separa" if r["amt"] is not None else "")
+
+
+def extra_note(butiran):
+    """Nota dalam kurungan yang bukan bulan, cth '(Hutang Lawatan)'."""
+    notes = [g for g in re.findall(r"\(([^)]*)\)", butiran) if re.search(r"hutang|lamb|boling", g, re.I)]
+    return (" - " + ", ".join(notes)) if notes else ""
+
+
+def split_rows(rows):
+    """Satu baris yuran dengan bulan -> satu baris setiap larian bulan. Jumlah kekal tepat."""
+    out, notes = [], []
+    for x in rows:
+        if not x.get("_toks"):
+            x["mula"] = x["akhir"] = ""
+            out.append(x)
+            continue
+        runs = runs_of(x["_toks"])
+        cats = [k for k in ("kelab", "lawatan") if x[k]]
+        nominal = {k: [(r["amt"] if r["amt"] is not None else RATE[k]) * r["n"] for r in runs] for k in cats}
+        mismatch = any(abs(sum(nominal[k]) - x[k]) > 0.01 for k in cats)
+        why = "; ".join(f"{k} RM{x[k]:g} bukan RM{sum(nominal[k]):g}" for k in cats if abs(sum(nominal[k]) - x[k]) > 0.01)
+        if len(runs) == 1:
+            r = runs[0]
+            out.append({**x, "mula": "%d-%02d" % r["start"], "akhir": "%d-%02d" % r["end"],
+                        "butiran": f"{x['ahli']} ({label(r)}){extra_note(x['butiran'])}",
+                        "_flag": f"Semak: {why}" if mismatch else ""})
+            if mismatch:
+                notes.append((x["tarikh"].isoformat(), x["butiran"], "jumlah tidak sepadan kadar x bulan"))
+            continue
+        for i, r in enumerate(runs):
+            row = {**x, "mula": "%d-%02d" % r["start"], "akhir": "%d-%02d" % r["end"], "_flag": "",
+                   "butiran": f"{x['ahli']} ({label(r)}){extra_note(x['butiran'])}"}
+            for k in cats:
+                tot = sum(nominal[k]) or 1
+                row[k] = round(x[k] * nominal[k][i] / tot, 2)
+            out.append(row)
+        for k in cats:  # betulkan sen akibat pembundaran pada baris terakhir
+            diff = round(x[k] - sum(o[k] for o in out[-len(runs):]), 2)
+            out[-1][k] = round(out[-1][k] + diff, 2)
+        if mismatch:
+            for o in out[-len(runs):]:
+                o["_flag"] = f"Semak: {why}"
+            notes.append((x["tarikh"].isoformat(), x["butiran"], "jumlah tidak sepadan kadar x bulan (dibahagi ikut nisbah)"))
+    return out, notes
 
 
 def main(src, dst):
     wb = openpyxl.load_workbook(src, data_only=True)
     rows = parse(wb["2025"]) + parse(wb["2026"])
     rows.sort(key=lambda x: x["tarikh"])  # sort stabil: susunan asal dalam hari yang sama kekal
-    inferred = fill_months(rows)
+    inferred, ambiguous = fill_months(rows, read_tab(wb))
+    rows, notes = split_rows(rows)
+    out = []
     for x in rows:
-        x.pop("_raw", None)
-        x["tarikh"] = x["tarikh"].isoformat()
-    masuk = sum(x["kelab"] + x["lawatan"] + x["lain"] for x in rows)
-    keluar = sum(x["keluar"] for x in rows)
-    print(f"{len(rows)} baris | masuk {masuk:.2f} | keluar {keluar:.2f} | baki {masuk - keluar:.2f}")
-    print(f"{len(inferred)} baris yuran tiada bulan ditulis - bulan diisi automatik (semak):")
+        flag = x.get("_flag", "")
+        if x.get("_status") == "tanpa-bulan":
+            flag = "Bulan?"
+        if x["ahli"] == "Hasnol" and x["tarikh"].isoformat() == "2025-09-26" and x["lawatan"] == 80:
+            flag = "Kes khas: bayar RM80 (nota tab lama)"
+        out.append(dict(tarikh=x["tarikh"].isoformat(), butiran=x["butiran"], ahli=x["ahli"], kategori=x["kategori"],
+                        mula=x.get("mula", ""), akhir=x.get("akhir", ""), kelab=x["kelab"], lawatan=x["lawatan"],
+                        lain=x["lain"], keluar=x["keluar"], nota=flag))
+    masuk = sum(x["kelab"] + x["lawatan"] + x["lain"] for x in out)
+    keluar = sum(x["keluar"] for x in out)
+    print(f"{len(out)} baris | masuk {masuk:.2f} | keluar {keluar:.2f} | baki {masuk - keluar:.2f}")
+    print(f"{len(ambiguous)} bulan tahun tidak pasti (diselesaikan guna tab Yuran Kelab atau bulan terdekat):")
+    for i in ambiguous:
+        print("  ", *i)
+    print(f"{len(inferred)} baris yuran TANPA bulan (dibiarkan kosong, ditanda 'Bulan?'):")
     for i in inferred:
         print("  ", *i)
-    json.dump(rows, open(dst, "w"), ensure_ascii=False, indent=1)
+    print(f"{len(notes)} baris jumlah tidak sepadan:")
+    for i in notes:
+        print("  ", *i)
+    json.dump(out, open(dst, "w"), ensure_ascii=False, indent=1)
 
 
 if __name__ == "__main__":

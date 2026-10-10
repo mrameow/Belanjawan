@@ -1,19 +1,23 @@
 # Belanjawan Kelab Guru
 
-Aplikasi telefon (Android) untuk rekod wang masuk/keluar kelab, yang menulis terus ke Google Sheet anda.
+> **Status:** `Belanjawan_Kelab_Guru_Baru.xlsx` telah direka semula (Dashboard, Harian, Yuran, Transaksi, Tetapan, Panduan) dan ialah fokus semasa.
+> Folder `docs/` dan `apps-script/` di bawah masih untuk struktur lajur **lama**; ia akan disesuaikan dengan Excel baharu selepas Excel diluluskan.
+
+PWA (app yang boleh dipasang di Android) untuk rekod wang masuk/keluar kelab, menulis terus ke Google Sheet anda.
 
 ```
-Telefon Android (Chrome)  ──►  Web App (Apps Script)  ──►  Google Sheet anda
-   borang + senarai yuran       semak PIN, tulis baris       Ringkasan · Harian · Transaksi · Yuran Ahli · Tetapan
+Android / mana-mana pelayar ──► docs/ (GitHub Pages, PWA) ──► Apps Script (API JSON) ──► Google Sheet anda
+        buka & pasang app          borang + senarai yuran         semak PIN, baca/tulis        Ringkasan · Harian · Transaksi · Yuran Ahli · Tetapan
 ```
 
 ## Fail
 
 | Fail | Fungsi |
 |---|---|
-| `Belanjawan_Kelab_Guru_Baru.xlsx` | Tab baharu untuk dimasukkan ke Google Sheet anda (212 baris 2025–2026 sudah dipindahkan) |
-| `apps-script/Code.gs`, `Index.html`, `appsscript.json` | Aplikasi |
-| `tools/migrate.py`, `tools/build_sheet.py` | Skrip yang menukar helaian lama kepada format baharu |
+| `docs/` | **App (PWA)**: `index.html`, `manifest.webmanifest`, `sw.js`, `icons/`. Dihidang oleh GitHub Pages |
+| `apps-script/Code.gs` | API kecil yang ditampal dalam Google Sheet (tiada paparan HTML lagi) |
+| `Belanjawan_Kelab_Guru_Baru.xlsx` | Tab baharu untuk dimasukkan ke Google Sheet anda |
+| `tools/` | Skrip yang menukar helaian lama kepada format baharu |
 
 Baki selepas migrasi = **RM887.02**, sama dengan helaian lama.
 
@@ -33,37 +37,36 @@ Satu baris dalam **Transaksi** = satu bayaran, seperti helaian lama:
 ## Pemasangan (sekali sahaja)
 
 ### A. Masukkan tab baharu ke Google Sheet anda
-1. Muat naik `Belanjawan_Kelab_Guru_Baru.xlsx` ke Google Drive (atau terus dari komputer).
-2. Buka Google Sheet anda → **File → Import → Upload** → pilih fail → **Import location: _Insert new sheet(s)_** → Import data.
-   Lima tab baharu muncul; tab lama (2025, 2026, dsb.) tidak disentuh.
+1. Buka Google Sheet anda → **File → Import → Upload** → pilih `Belanjawan_Kelab_Guru_Baru.xlsx` → **Import location: _Insert new sheet(s)_** → Import data. Lima tab baharu muncul; tab lama tidak disentuh.
 
-### B. Pasang aplikasi
-1. Dalam Google Sheet itu: **Extensions → Apps Script**.
-2. Padam kandungan `Code.gs`, tampal isi `apps-script/Code.gs`.
-3. Klik **+ → HTML**, namakan tepat `Index`, tampal isi `apps-script/Index.html`.
-4. **Project Settings (⚙) → tandakan "Show appsscript.json manifest file"**, buka fail itu dan tampal isi `apps-script/appsscript.json`.
-5. Dalam `Code.gs`, tukar `1234` dalam `aturPin()` kepada PIN anda. Pilih fungsi **aturPin** di bar atas → **Run** → **Review permissions → pilih akaun → Advanced → Go to … (unsafe) → Allow**.
-   *Langkah ini wajib. Tanpa kebenaran, pautan web app tidak akan terbuka.*
-6. (Pilihan) pilih **testApp** → Run. Log mesti menunjukkan `OK: 212 transaksi, 15 ahli`.
-7. **Deploy → New deployment → ⚙ Web app** → *Execute as: Me*, *Who has access: Anyone* → Deploy. Salin URL yang berakhir `/exec`.
-8. Di Android: buka URL dalam Chrome → menu ⋮ → **Add to Home screen**. Masukkan PIN sekali.
+### B. Pasang API (Apps Script)
+1. Dalam Google Sheet itu: **Extensions → Apps Script**. Padam kandungan `Code.gs`, tampal isi `apps-script/Code.gs`. (Tiada fail HTML diperlukan.)
+2. Tukar `1234` dalam `aturPin()` kepada PIN anda. Pilih fungsi **aturPin** di bar atas → **Run** → **Review permissions → akaun → Advanced → Go to … → Allow**. *Wajib.*
+3. (Pilihan) Run **testApp**: log mesti `OK: … transaksi, 15 ahli`.
+4. **Deploy → New deployment → ⚙ Web app** → *Execute as: Me*, *Who has access: Anyone* → Deploy. Salin URL yang berakhir `/exec`.
+   Bila `Code.gs` diubah kemudian: **Manage deployments → ✏ → Version: New version → Deploy**.
 
-> Bila anda ubah kod kemudian, **Deploy → Manage deployments → ✏ → Version: New version → Deploy**. Jika tidak, URL lama masih menjalankan kod lama.
+### C. Hidangkan app di GitHub Pages
+1. Repo GitHub → **Settings → Pages → Build and deployment → Source: Deploy from a branch** → Branch: cawangan yang ada folder `docs` (`claude/fervent-einstein-y0czm1`), folder **/docs** → Save.
+2. Tunggu 1–2 minit; alamat muncul di bahagian atas halaman itu, biasanya `https://mrameow.github.io/Belanjawan/`.
+3. **Penting:** GitHub Pages untuk repo *private* memerlukan pelan berbayar (Pro/Team). Pada pelan percuma repo mesti *public*. Jangan jadikan repo ini public kerana ia mengandungi fail `.xlsx` dengan nama dan wang kelab. Lihat "Tanpa GitHub Pages" di bawah.
 
-## Pautan tidak boleh dibuka?
+### D. Pasang di Android
+1. Buka alamat Pages dalam **Chrome**. Pada kali pertama, tampal **URL API** (dari B4) dan **PIN**, tekan *Sambung*.
+2. Menu ⋮ Chrome → **Install app** / **Add to Home screen** (atau ⚙ dalam app → *Pasang app*). Ikon "RM" muncul di skrin utama dan app dibuka tanpa bar pelayar.
+3. URL API dan PIN disimpan dalam peranti itu sahaja. Boleh buat yang sama di telefon/komputer lain.
 
-### Jika yang keluar ialah "Sorry, unable to open the file at this time. Please check the address and try again." (halaman Google Drive)
-Ini **bukan** ralat kod (ralat kod memaparkan halaman Apps Script). Ia bermaksud Google tidak boleh memadankan pautan dengan akaun yang sedang log masuk. Cuba mengikut turutan:
+### Tanpa GitHub Pages
+Folder `docs/` ialah laman statik biasa. Muat naik ke mana-mana hos statik HTTPS: **Cloudflare Pages**, **Netlify Drop** (seret folder `docs`), atau repo GitHub *public* baharu yang hanya mengandungi `docs/`. Tiada data dalam folder itu; data hanya dibaca daripada Google Sheet dengan PIN.
 
-1. **Tetingkap Incognito/Private.** Buka pautan di situ. Jika ia terbuka (atau minta log masuk), puncanya ialah beberapa akaun Google log masuk serentak. Di telefon: log keluar akaun lain dalam Chrome, atau guna tab Incognito.
-2. **Guna URL yang sebenar.** Dalam editor Apps Script pilih fungsi **diagnos** → Run → lihat *Execution log*. Baris `URL web app` ialah pautan yang betul. Pada akaun sekolah ia biasanya berbentuk `https://script.google.com/a/macros/moe-dl.edu.my/s/…/exec` (ada `/a/macros/<domain>/`). Pautan lama daripada deployment yang dipadam juga memberi mesej ini.
-3. **Semak tetapan deployment.** *Deploy → Manage deployments → ✏*: *Execute as* = **Me**, *Who has access* = **Anyone**. Jika pilihan *Anyone* tiada atau pautan masih gagal, pentadbir domain sekolah mungkin menyekatnya.
-4. **Jalan keluar paling pasti: guna akaun Gmail peribadi.** Muat naik `.xlsx` ke Drive Gmail itu, import ke Google Sheet baharu (Import → Upload), ulang langkah B1–B8. Akaun peribadi tiada sekatan pentadbir.
+## Masalah
 
-### Masalah lain
-- **"Authorization is required"** → belum beri kebenaran; ulang langkah B5.
-- **URL berakhir `/dev`** → mesti `/exec`.
-- **Skrin kosong/ralat selepas ubah kod** → *Manage deployments → ✏ → Version: New version → Deploy*. Pastikan fail HTML dinamakan tepat `Index`.
+- **"Jawapan tidak sah daripada API"** → URL API salah, atau belum Deploy sebagai Web app. Mesti berakhir `/exec`.
+- **"PIN salah"** → mesti sama dengan `aturPin()`. Lima cubaan salah mengunci 10 minit.
+- **Luar talian** → app memaparkan data terakhir yang disimpan; simpan & padam perlu internet.
+- **Mengubah `Code.gs`** → buat *New version* (B4), jika tidak URL lama masih menjalankan kod lama.
+- **Membuka URL API terus dalam Chrome menunjukkan "Sorry, unable to open the file"** → kesan beberapa akaun Google log masuk; *tidak menjejaskan app* kerana app memanggil API tanpa log masuk. Untuk menguji URL, buka dalam Incognito: ia memaparkan `{"ok":true,…}`.
+- **Pilihan *Anyone* tiada** (akaun sekolah) → minta pentadbir domain benarkan, atau guna akaun Gmail peribadi.
 
 ## Cara guna
 
@@ -75,11 +78,11 @@ Ini **bukan** ralat kod (ralat kod memaparkan halaman Apps Script). Ia bermaksud
 
 ## Keselamatan
 
-URL web app boleh dibuka sesiapa yang tahu pautannya, tetapi **semua data dilindungi PIN** pada pelayar dan pelayan. Jangan kongsi PIN atau URL dalam kumpulan awam. Tukar PIN dengan mengubah `aturPin()` dan Run semula.
+URL API boleh dipanggil sesiapa yang tahu pautannya, tetapi **semua data dilindungi PIN** pada pelayan (lima cubaan salah = kunci 10 minit). Jangan kongsi URL API atau PIN dalam kumpulan awam. Tukar PIN dengan mengubah `aturPin()` dan Run semula. App di GitHub Pages tidak mengandungi data atau PIN.
 
 ## Had & perkara untuk disemak
 
-- Ini web app yang dipasang sebagai ikon, bukan fail `.apk`.
+- PWA dipasang melalui Chrome (bukan fail `.apk` dalam Play Store); ia berkelakuan seperti app biasa.
 - **Tarikh Mula/Tamat ahli** (tab Tetapan) diteka daripada data lama (cth. Wafi tamat Mac 2026, Suhaimi Ogos 2025, Boss Khairil Sep 2025). Semak, kerana ia menentukan bulan mana dikira "belum bayar".
 - **3 bayaran lama tiada bulan ditulis** ("Ustaz" lawatan RM100, "Hasnol" RM225, "Kuchai" RM315). Bulan diisi automatik pada bulan kosong terawal; semak lajur *Bulan Yuran* untuk baris ini.
 - Kuchai dan Wafi ditetapkan Lawatan = 0 (kadar 0 = dikecualikan) berdasarkan data lama; ubah di Tetapan jika salah.

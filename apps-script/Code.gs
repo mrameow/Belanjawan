@@ -1,6 +1,6 @@
 /**
  * Belanjawan Kelab Guru - bahagian pelayan (Google Apps Script).
- * Skrip ini "terikat" pada Google Sheet: Extensions > Apps Script.
+ * Skrip ini "terikat" pada Google Sheet: Extensions > Apps Script. Hanya API; app ada di folder docs/ (GitHub Pages).
  *
  * Lajur helaian Transaksi:
  *  A ID | B Tarikh | C Ahli/Pihak | D Butiran | E Kategori | F Bulan Yuran |
@@ -11,16 +11,30 @@ const SHEET_SET = 'Tetapan';
 const TZ = 'Asia/Kuala_Lumpur';
 const NCOL = 10;
 
+/**
+ * API JSON untuk app (GitHub Pages / PWA). Semua permintaan ialah POST dengan badan teks JSON
+ * {action, pin, ...}. Jenis kandungan text/plain mengelakkan preflight CORS.
+ */
 function doGet() {
+  return json_({ ok: true, data: 'Belanjawan Kelab Guru API aktif. Gunakan app untuk membaca data.' });
+}
+
+function doPost(e) {
   try {
-    return HtmlService.createHtmlOutputFromFile('Index')
-      .setTitle('Belanjawan Kelab Guru')
-      .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover')
-      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+    const req = JSON.parse(e.postData.contents);
+    switch (req.action) {
+      case 'getData': return json_({ ok: true, data: getData(req.pin) });
+      case 'add': return json_({ ok: true, data: addTransactions(req.pin, req.rows) });
+      case 'delete': return json_({ ok: true, data: deleteTransaction(req.pin, req.id) });
+      default: throw new Error('Tindakan tidak dikenali');
+    }
   } catch (err) {
-    return HtmlService.createHtmlOutput('<pre style="font:14px monospace;padding:16px">Ralat: ' +
-      String(err).replace(/</g, '&lt;') + '\n\nPastikan fail HTML dinamakan "Index".</pre>');
+    return json_({ ok: false, error: String(err && err.message || err) });
   }
+}
+
+function json_(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
 
 /**
@@ -68,8 +82,15 @@ function testApp() {
 
 function checkPin_(pin) {
   const saved = PropertiesService.getScriptProperties().getProperty('PIN');
-  if (!saved) throw new Error('PIN belum ditetapkan. Jalankan setPin di editor Apps Script.');
-  if (String(pin) !== saved) throw new Error('PIN salah');
+  if (!saved) throw new Error('PIN belum ditetapkan. Jalankan aturPin di editor Apps Script.');
+  const cache = CacheService.getScriptCache();
+  const fails = Number(cache.get('fails') || 0);
+  if (fails >= 5) throw new Error('Terlalu banyak cubaan salah. Cuba lagi selepas 10 minit.');
+  if (String(pin) !== saved) {
+    cache.put('fails', String(fails + 1), 600);
+    throw new Error('PIN salah');
+  }
+  if (fails) cache.remove('fails');
 }
 
 function ss_() {

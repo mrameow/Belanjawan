@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0F766E">
+<meta name="description" content="Rekod wang masuk/keluar Kelab Guru ke Google Sheet">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <title>Belanjawan Kelab Guru</title>
 <style>
 :root{--bg:#F1F5F9;--card:#fff;--ink:#0F172A;--mute:#64748B;--line:#E2E8F0;--teal:#0F766E;--teal-l:#CCFBF1;
@@ -74,22 +80,34 @@ nav button.on{color:var(--teal);font-weight:700}nav svg{display:block;margin:0 a
 .ok{color:var(--in);font-size:13px}
 .alert{display:flex;gap:12px;align-items:center;cursor:pointer}.alert .ico{background:var(--amb-l);color:var(--amb)}
 .hide{display:none!important}
+.gear{position:absolute;right:12px;top:calc(14px + env(safe-area-inset-top));border:0;background:rgba(255,255,255,.16);color:#fff;width:38px;height:38px;border-radius:12px;font-size:18px}
+header{position:relative}
+.banner{background:var(--amb-l);color:var(--amb);border-radius:12px;padding:10px 12px;font-size:13px;margin:56px 0 -44px;position:relative}
+.setup{max-width:420px;margin:8vh auto 0;padding:0 16px}.setup h1{color:var(--teal);margin:0 0 4px}.setup p{color:var(--mute);margin:0 0 8px}
+.setup small{display:block;color:var(--mute);font-size:12px;margin-top:4px}
+.link{background:none;border:0;color:var(--teal);font:inherit;padding:12px 0;width:100%}
 </style>
 </head>
 <body>
 
-<div id="lock" class="lock hide card">
-  <h1>Belanjawan Kelab Guru</h1>
-  <p style="color:var(--mute)">Masukkan PIN</p>
-  <input id="pin" type="password" inputmode="numeric" maxlength="8" autocomplete="off">
-  <button class="go" id="pinGo">Masuk</button>
-  <p id="pinErr" class="err"></p>
+<div id="lock" class="setup hide">
+  <div class="card">
+    <h1>Belanjawan Kelab Guru</h1>
+    <p>Sambungkan app ke Google Sheet anda (sekali sahaja).</p>
+    <label>URL API (Apps Script, berakhir /exec)</label>
+    <input id="apiUrl" type="url" inputmode="url" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off">
+    <label>PIN</label>
+    <input id="pin" type="password" inputmode="numeric" maxlength="8" autocomplete="off" placeholder="PIN anda">
+    <button class="go" id="pinGo">Sambung</button>
+    <p id="pinErr" class="err" style="padding:12px 0 0"></p>
+  </div>
 </div>
 
 <div id="app" class="hide">
-<header><h1>Belanjawan Kelab Guru</h1><p id="sync">Memuatkan…</p></header>
+<header><h1>Belanjawan Kelab Guru</h1><p id="sync">Memuatkan…</p><button class="gear" id="gear" aria-label="Tetapan">⚙</button></header>
 <main>
   <section id="v-home">
+    <div class="banner hide" id="offline">Tiada sambungan. Memaparkan data terakhir yang disimpan; simpan/padam tidak tersedia.</div>
     <div class="card bal">
       <small>Baki semasa</small><div class="v" id="bal">RM0.00</div>
       <div class="pair">
@@ -146,6 +164,15 @@ nav button.on{color:var(--teal);font-weight:700}nav svg{display:block;margin:0 a
   <button class="ghost" id="cancel">Batal</button>
 </div></div>
 
+<div class="sheet" id="settings"><div class="in">
+  <h2 style="margin:0 0 4px">Tetapan</h2>
+  <p style="color:var(--mute);font-size:13px;margin:0 0 8px" id="setInfo"></p>
+  <button class="go" id="installBtn" style="background:var(--in-l);color:var(--in)">Pasang app di skrin utama</button>
+  <button class="go" id="refreshBtn">Muat semula data</button>
+  <button class="go del" id="logoutBtn">Padam sambungan &amp; PIN daripada peranti ini</button>
+  <button class="ghost" id="setClose">Tutup</button>
+</div></div>
+
 <div class="sheet" id="detail"><div class="in" id="dBody"></div></div>
 </div>
 <div class="toast" id="toast"></div>
@@ -156,11 +183,21 @@ const RM = n => (n < 0 ? '-' : '') + 'RM' + Math.abs(n).toLocaleString('en-MY', 
 const MON = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogo','Sep','Okt','Nov','Dis'];
 const HARI = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let PIN = '', D = null;
+let PIN = '', API = '', D = null;
 const state = {f: '', q: '', mode: 'Masuk', type: 'yuran', year: new Date().getFullYear(), sel: new Set()};
 const store = {get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} }};
 
-const run = (fn, ...a) => new Promise((ok, no) => google.script.run.withSuccessHandler(ok).withFailureHandler(e => no(new Error(e.message || e)))[fn](...a));
+const ACTION = {getData: 'getData', addTransactions: 'add', deleteTransaction: 'delete'};
+async function run(fn, pin, arg) {
+  const body = {action: ACTION[fn], pin};
+  if (fn === 'addTransactions') body.rows = arg; if (fn === 'deleteTransaction') body.id = arg;
+  let r;
+  try { r = await fetch(API, {method: 'POST', headers: {'Content-Type': 'text/plain;charset=utf-8'}, body: JSON.stringify(body), redirect: 'follow'}); }
+  catch (e) { const err = new Error('Tiada sambungan ke Google Sheet'); err.offline = true; throw err; }
+  let j; try { j = await r.json(); } catch (e) { throw new Error('Jawapan tidak sah daripada API. Semak URL (mesti berakhir /exec) dan deployment.'); }
+  if (!j.ok) throw new Error(j.error || 'Ralat tidak diketahui');
+  return j.data;
+}
 function toast(t) { const e = $('#toast'); e.textContent = t; e.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => e.style.display = 'none', 2600); }
 const today = () => { const d = new Date(); return new Date(d - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); };
 const mIdx = s => +s.slice(0, 4) * 12 + (+s.slice(5, 7) - 1);          // 'YYYY-MM' -> nombor bulan
@@ -168,14 +205,26 @@ const mKey = i => `${Math.floor(i / 12)}-${String(i % 12 + 1).padStart(2, '0')}`
 const mLabel = k => `${MON[+k.slice(5, 7) - 1]} ${k.slice(2, 4)}`;
 const income = x => x.kelab + x.lawatan + x.lain;
 
-async function login(pin) {
-  PIN = pin; $('#pinErr').textContent = '';
-  try { await load(); store.set('pin', pin); $('#lock').classList.add('hide'); $('#app').classList.remove('hide'); }
-  catch (e) { store.set('pin', ''); $('#app').classList.add('hide'); $('#lock').classList.remove('hide'); $('#pinErr').textContent = e.message; }
+async function login(url, pin, silent) {
+  API = url.trim(); PIN = pin; $('#pinErr').textContent = '';
+  if (!/^https:\/\/script\.google(usercontent)?\.com\/.+\/exec$/.test(API)) {
+    $('#pinErr').textContent = 'URL tidak sah. Mesti bermula https://script.google.com/ dan berakhir /exec'; return showLock();
+  }
+  try { await load(); store.set('api', API); store.set('pin', pin); $('#lock').classList.add('hide'); $('#app').classList.remove('hide'); }
+  catch (e) {
+    const cached = e.offline && silent && store.get('cache');
+    if (cached) { D = JSON.parse(cached); D.items.forEach((x, i) => x.i = i); render(); $('#offline').classList.remove('hide');
+      $('#sync').textContent = 'Luar talian - data terakhir'; $('#lock').classList.add('hide'); $('#app').classList.remove('hide'); return; }
+    if (silent && !e.offline) { store.set('pin', ''); }
+    $('#pinErr').textContent = e.message; showLock();
+  }
 }
+function showLock() { $('#app').classList.add('hide'); $('#lock').classList.remove('hide'); $('#apiUrl').value = API || store.get('api') || ''; }
 async function load() {
   D = await run('getData', PIN);
   D.items.forEach((x, i) => x.i = i);
+  store.set('cache', JSON.stringify(D));
+  $('#offline').classList.add('hide');
   render();
   $('#sync').textContent = 'Dikemas kini ' + new Date().toLocaleTimeString('ms-MY', {hour: '2-digit', minute: '2-digit'});
 }
@@ -310,8 +359,20 @@ async function save() {
 }
 
 /* ---- event (pengendali tidak memulangkan nilai: elak preventDefault tersembunyi) ---- */
-$('#pinGo').onclick = () => login($('#pin').value);
-$('#pin').onkeydown = e => { if (e.key === 'Enter') login($('#pin').value); };
+$('#pinGo').onclick = () => login($('#apiUrl').value, $('#pin').value);
+$('#pin').onkeydown = e => { if (e.key === 'Enter') login($('#apiUrl').value, $('#pin').value); };
+let installEvt = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; $('#installBtn').classList.remove('hide'); });
+window.addEventListener('appinstalled', () => { installEvt = null; $('#installBtn').classList.add('hide'); toast('App dipasang'); });
+$('#gear').onclick = () => {
+  $('#setInfo').textContent = 'Disambung ke: ' + API.replace(/^(https:\/\/[^/]+\/.{0,24}).*(\/exec)$/, '$1…$2');
+  $('#installBtn').classList.toggle('hide', !installEvt); $('#settings').classList.add('open');
+};
+$('#installBtn').onclick = async () => { if (installEvt) { installEvt.prompt(); await installEvt.userChoice; installEvt = null; $('#settings').classList.remove('open'); } };
+$('#refreshBtn').onclick = async () => { $('#settings').classList.remove('open'); try { await load(); toast('Dikemas kini'); } catch (e) { toast(e.message); } };
+$('#logoutBtn').onclick = () => { ['api', 'pin', 'cache'].forEach(k => store.set(k, '')); API = PIN = ''; D = null; $('#settings').classList.remove('open'); showLock(); };
+$('#setClose').onclick = () => $('#settings').classList.remove('open');
+$('#settings').onclick = e => { if (e.target.id === 'settings') $('#settings').classList.remove('open'); };
 function showView(v) {
   $$('nav button').forEach(x => x.classList.toggle('on', x.dataset.v === v));
   ['home', 'list', 'ahli'].forEach(id => $('#v-' + id).classList.toggle('hide', id !== v));
@@ -350,7 +411,7 @@ document.addEventListener('click', e => {
   $('#detail').classList.add('open');
   $('#dClose').onclick = () => $('#detail').classList.remove('open');
   let armed = false;
-  $('#delBtn').onclick = async () => {              // pengesahan dalam app (confirm() disekat dalam Apps Script)
+  $('#delBtn').onclick = async () => {              // pengesahan dua ketukan dalam app
     const btn = $('#delBtn');
     if (!armed) { armed = true; btn.textContent = 'Ketik sekali lagi untuk SAHKAN padam'; return; }
     btn.disabled = true;
@@ -359,9 +420,10 @@ document.addEventListener('click', e => {
   };
 });
 
-const saved = store.get('pin');
-$('#lock').classList.remove('hide');
-if (saved) { $('#lock').classList.add('hide'); login(saved); }
+const savedApi = store.get('api'), savedPin = store.get('pin');
+if (savedApi && savedPin) login(savedApi, savedPin, true); else showLock();
+$('#installBtn').classList.add('hide');
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
 </body>
 </html>
