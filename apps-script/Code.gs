@@ -45,6 +45,21 @@ function setPin(pin) {
   Logger.log('Siap. PIN ditetapkan. Seterusnya: Deploy > New deployment > Web app.');
 }
 
+/**
+ * Diagnosis pautan: pilih "diagnos" -> Run -> buka View > Logs (Execution log).
+ * Mencetak URL web app yang SEBENAR (di akaun sekolah ia berbentuk /a/macros/<domain>/s/.../exec),
+ * akaun pemilik, dan sama ada helaian boleh dibaca.
+ */
+function diagnos() {
+  let url = '(belum di-deploy sebagai Web app)';
+  try { url = ScriptApp.getService().getUrl() || url; } catch (e) { url = 'ralat: ' + e; }
+  Logger.log('URL web app : ' + url);
+  Logger.log('Akaun pemilik: ' + Session.getEffectiveUser().getEmail());
+  Logger.log('PIN ditetapkan: ' + !!PropertiesService.getScriptProperties().getProperty('PIN'));
+  Logger.log('Helaian      : ' + ss_().getName() + ' | Transaksi=' + !!ss_().getSheetByName(SHEET_TX) +
+    ' | Tetapan=' + !!ss_().getSheetByName(SHEET_SET));
+}
+
 /** Ujian dari editor: pilih testApp dan tekan Run; log menunjukkan sama ada data boleh dibaca. */
 function testApp() {
   const d = getData(PropertiesService.getScriptProperties().getProperty('PIN'));

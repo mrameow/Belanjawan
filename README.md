@@ -52,14 +52,18 @@ Satu baris dalam **Transaksi** = satu bayaran, seperti helaian lama:
 
 ## Pautan tidak boleh dibuka?
 
-Semak mengikut turutan:
+### Jika yang keluar ialah "Sorry, unable to open the file at this time. Please check the address and try again." (halaman Google Drive)
+Ini **bukan** ralat kod (ralat kod memaparkan halaman Apps Script). Ia bermaksud Google tidak boleh memadankan pautan dengan akaun yang sedang log masuk. Cuba mengikut turutan:
 
-1. **Belum beri kebenaran** (punca paling biasa). Ulang langkah B5. Pautan akan menunjukkan "Authorization is required" jika terlepas.
-2. **URL salah.** Mesti berakhir `/exec`, bukan `/dev`.
-3. **"Who has access" tiada pilihan *Anyone*.** Akaun sekolah (moe-dl.edu.my) mungkin disekat pentadbir. Pilih *Anyone within …* dan buka pautan dalam Chrome yang log masuk dengan akaun sekolah yang sama, atau gunakan helaian + skrip di akaun Gmail peribadi.
-4. **"Sorry, unable to open the file at this time"** biasanya kerana beberapa akaun Google log masuk serentak. Cuba tetingkap Incognito, atau log keluar akaun lain.
-5. **Skrin kosong/ralat selepas ubah kod** → buat *New version* (nota di atas). Pastikan fail HTML dinamakan tepat `Index`.
-6. Jika masih gagal, hantar teks ralat atau tangkapan skrin yang anda nampak.
+1. **Tetingkap Incognito/Private.** Buka pautan di situ. Jika ia terbuka (atau minta log masuk), puncanya ialah beberapa akaun Google log masuk serentak. Di telefon: log keluar akaun lain dalam Chrome, atau guna tab Incognito.
+2. **Guna URL yang sebenar.** Dalam editor Apps Script pilih fungsi **diagnos** → Run → lihat *Execution log*. Baris `URL web app` ialah pautan yang betul. Pada akaun sekolah ia biasanya berbentuk `https://script.google.com/a/macros/moe-dl.edu.my/s/…/exec` (ada `/a/macros/<domain>/`). Pautan lama daripada deployment yang dipadam juga memberi mesej ini.
+3. **Semak tetapan deployment.** *Deploy → Manage deployments → ✏*: *Execute as* = **Me**, *Who has access* = **Anyone**. Jika pilihan *Anyone* tiada atau pautan masih gagal, pentadbir domain sekolah mungkin menyekatnya.
+4. **Jalan keluar paling pasti: guna akaun Gmail peribadi.** Muat naik `.xlsx` ke Drive Gmail itu, import ke Google Sheet baharu (Import → Upload), ulang langkah B1–B8. Akaun peribadi tiada sekatan pentadbir.
+
+### Masalah lain
+- **"Authorization is required"** → belum beri kebenaran; ulang langkah B5.
+- **URL berakhir `/dev`** → mesti `/exec`.
+- **Skrin kosong/ralat selepas ubah kod** → *Manage deployments → ✏ → Version: New version → Deploy*. Pastikan fail HTML dinamakan tepat `Index`.
 
 ## Cara guna
 
