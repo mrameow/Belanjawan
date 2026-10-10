@@ -12,34 +12,31 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Belanjawan Kelab Guru</title>
 <style>
-:root{--bg:#F1F5F9;--card:#fff;--ink:#0F172A;--mute:#64748B;--line:#E2E8F0;--teal:#0F766E;--teal-l:#CCFBF1;
---in:#15803D;--in-l:#DCFCE7;--out:#B91C1C;--out-l:#FEE2E2;--amb:#B45309;--amb-l:#FEF3C7;--shadow:0 1px 3px rgba(15,23,42,.08),0 4px 12px rgba(15,23,42,.05)}
+:root{--bg:#F8FAFC;--card:#fff;--ink:#0F172A;--mute:#64748B;--line:#E5E7EB;--teal:#0F766E;--teal-l:#ECFDF5;
+--in:#15803D;--in-l:#DCFCE7;--out:#B91C1C;--out-l:#FEE2E2;--amb:#B45309;--amb-l:#FEF3C7;--shadow:0 1px 2px rgba(15,23,42,.06)}
 @media (prefers-color-scheme:dark){:root{--bg:#0B1220;--card:#131C2E;--ink:#E5E7EB;--mute:#94A3B8;--line:#24304A;--teal:#14B8A6;--teal-l:#0F3A37;
 --in:#4ADE80;--in-l:#11301F;--out:#F87171;--out-l:#3A1818;--amb:#FBBF24;--amb-l:#3A2E10;--shadow:none}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
-header{background:linear-gradient(135deg,#0F766E,#134E4A);color:#fff;padding:calc(18px + env(safe-area-inset-top)) 16px 64px}
-header h1{margin:0;font-size:18px;font-weight:700}
-header p{margin:2px 0 0;font-size:12px;opacity:.8}
-main{padding:0 16px;margin-top:-48px;max-width:640px;margin-inline:auto}
-.card{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:16px;margin-bottom:12px}
-.card.flush{padding:4px 16px}
-.bal small{color:var(--mute);font-size:12px;letter-spacing:.04em;text-transform:uppercase}
-.bal .v{font-size:32px;font-weight:800;color:var(--teal);margin:2px 0 10px;font-variant-numeric:tabular-nums}
+header{position:sticky;top:0;z-index:4;background:var(--bg);padding:calc(14px + env(safe-area-inset-top)) 16px 10px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)}
+header h1{margin:0;font-size:17px;font-weight:700;flex:1}header small{display:block;font-size:11px;font-weight:400;color:var(--mute)}
+.ib{border:0;background:var(--card);color:var(--ink);width:38px;height:38px;border-radius:12px;font-size:17px;box-shadow:var(--shadow);border:1px solid var(--line)}
+main{padding:14px 16px;max-width:640px;margin-inline:auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
+.card.flush{padding:2px 16px}
+.lbl{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--mute);font-weight:600}
+.big{font-size:32px;font-weight:800;color:var(--teal);margin:2px 0 10px;font-variant-numeric:tabular-nums}
 .pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.pill{border-radius:12px;padding:10px 12px}
-.pill b{display:block;font-size:17px;font-variant-numeric:tabular-nums}.pill span{font-size:12px;color:var(--mute)}
+.pill{border-radius:12px;padding:10px 12px}.pill b{display:block;font-size:17px;font-variant-numeric:tabular-nums}.pill span{font-size:12px;color:var(--mute)}
 .pill.in{background:var(--in-l)}.pill.in b{color:var(--in)}.pill.out{background:var(--out-l)}.pill.out b{color:var(--out)}
-h2{font-size:13px;margin:18px 4px 8px;color:var(--mute);text-transform:uppercase;letter-spacing:.05em}
-.day{display:flex;justify-content:space-between;align-items:baseline;margin:18px 4px 6px;font-size:13px;font-weight:700;color:var(--ink)}
+h2{font-size:12px;margin:20px 4px 8px;color:var(--mute);text-transform:uppercase;letter-spacing:.06em}
+.day{display:flex;justify-content:space-between;align-items:baseline;margin:18px 4px 6px;font-size:13px;font-weight:700}
 .day span{font-weight:600;font-variant-numeric:tabular-nums}.day .p{color:var(--in)}.day .n{color:var(--out)}
-.row{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
-.row:last-child{border:0}
-.ico{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-weight:800;flex:none}
-.ico.Masuk{background:var(--in-l);color:var(--in)}.ico.Keluar{background:var(--out-l);color:var(--out)}
-.row .t{flex:1;min-width:0}.row .t b{display:block;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.row .t span{font-size:12px;color:var(--mute)}
+.row{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}.row:last-child{border:0}
+.ico{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;font-weight:800;flex:none;font-size:15px}
+.ico.Masuk{background:var(--in-l);color:var(--in)}.ico.Keluar{background:var(--out-l);color:var(--out)}.ico.Amb{background:var(--amb-l);color:var(--amb)}
+.t{flex:1;min-width:0}.t b{display:block;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.t span{font-size:12px;color:var(--mute)}
 .amt{font-weight:700;font-variant-numeric:tabular-nums;text-align:right}.amt small{display:block;font-weight:500;font-size:11px;color:var(--mute)}
 .amt.Masuk{color:var(--in)}.amt.Keluar{color:var(--out)}
 .chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
@@ -48,48 +45,51 @@ h2{font-size:13px;margin:18px 4px 8px;color:var(--mute);text-transform:uppercase
 input,select{width:100%;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
 label{display:block;font-size:12px;color:var(--mute);margin:12px 0 4px}
 nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:5}
-nav button{flex:1;border:0;background:none;color:var(--mute);padding:10px 0 8px;font:inherit;font-size:11px}
+nav button{flex:1;border:0;background:none;color:var(--mute);padding:10px 0 8px;font:inherit;font-size:11px;position:relative}
 nav button.on{color:var(--teal);font-weight:700}nav svg{display:block;margin:0 auto 2px}
-.fab{position:fixed;right:18px;bottom:calc(76px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:18px;border:0;background:var(--teal);color:#fff;font-size:30px;box-shadow:0 6px 16px rgba(15,118,110,.4);z-index:6}
-.sheet{position:fixed;inset:0;background:rgba(15,23,42,.5);display:none;align-items:flex-end;z-index:20}
-.sheet.open{display:flex}
+nav .dot{position:absolute;top:6px;left:calc(50% + 6px);min-width:16px;height:16px;border-radius:99px;background:var(--out);color:#fff;font-size:10px;line-height:16px;font-weight:700}
+.fab{position:fixed;right:18px;bottom:calc(76px + env(safe-area-inset-bottom));width:56px;height:56px;border-radius:18px;border:0;background:var(--teal);color:#fff;font-size:30px;box-shadow:0 6px 16px rgba(15,118,110,.35);z-index:6}
+.sheet{position:fixed;inset:0;background:rgba(15,23,42,.5);display:none;align-items:flex-end;z-index:20}.sheet.open{display:flex}
 .sheet .in{background:var(--card);width:100%;max-width:640px;margin:0 auto;border-radius:22px 22px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));max-height:92vh;overflow:auto}
-.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--bg);border-radius:12px;padding:4px;gap:4px}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:3px;gap:3px}
 .seg button{border:0;background:none;padding:10px;border-radius:9px;font:inherit;color:var(--mute);font-weight:600}
-.seg button.on{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
-.seg button.on.Masuk{color:var(--in)}.seg button.on.Keluar{color:var(--out)}
-.yr{display:flex;align-items:center;justify-content:space-between;margin:12px 0 6px}.yr b{font-size:15px}.yr button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;width:40px;height:34px;font:inherit}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}.seg button.on.Masuk{color:var(--in)}.seg button.on.Keluar{color:var(--out)}
+.yr{display:flex;align-items:center;justify-content:space-between;margin:12px 0 6px}.yr b{font-size:15px}
+.yr button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;width:40px;height:34px;font:inherit}
 .months{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.months button{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:10px 0;font:inherit;font-size:14px;line-height:1.2}
+.months button{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:9px 0;font:inherit;font-size:14px;line-height:1.2}
 .months button small{display:block;font-size:10px;color:var(--mute)}
 .months button.paid{background:var(--in-l);color:var(--in);border-color:transparent}.months button.paid small{color:var(--in)}
 .months button.due{border-color:var(--out);color:var(--out)}.months button.due small{color:var(--out)}
-.months button.part{border-color:var(--amb);color:var(--amb)}
+.months button.part{border-color:var(--amb);color:var(--amb)}.months button.part small{color:var(--amb)}
 .months button.sel{background:var(--teal);color:#fff;border-color:var(--teal)}.months button.sel small{color:#fff}
-.chk{display:flex;align-items:center;gap:10px;padding:10px 0}.chk input[type=checkbox]{width:22px;height:22px;flex:none;padding:0;accent-color:var(--teal)}.chk span{flex:1}.chk input[type=number]{width:90px}
+.chk{display:flex;align-items:center;gap:10px;padding:10px 0}.chk input[type=checkbox]{width:22px;height:22px;flex:none;padding:0;accent-color:var(--teal)}
+.chk span{flex:1}.chk input[type=number]{width:96px}
 .go{width:100%;border:0;background:var(--teal);color:#fff;font:inherit;font-weight:700;padding:15px;border-radius:14px;margin-top:16px}
-.go:disabled{opacity:.5}.go.del{background:var(--out-l);color:var(--out)}
+.go:disabled{opacity:.5}.go.del{background:var(--out-l);color:var(--out)}.go.soft{background:var(--teal-l);color:var(--teal)}
 .ghost{width:100%;border:0;background:none;color:var(--mute);padding:12px;font:inherit}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(150px + env(safe-area-inset-bottom));background:#0F172A;color:#fff;padding:10px 16px;border-radius:12px;z-index:50;display:none;max-width:90%}
 .empty,.err{text-align:center;color:var(--mute);padding:28px 8px}.err{color:var(--out)}
-.bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;background:var(--teal)}
-.lock{max-width:340px;margin:20vh auto 0;text-align:center}.lock h1{color:var(--teal)}
-.lock input{text-align:center;font-size:24px;letter-spacing:.4em}
-.mchip{display:inline-block;font-size:12px;font-weight:600;border-radius:8px;padding:3px 8px;margin:3px 4px 0 0;background:var(--out-l);color:var(--out)}
+.mchip{display:inline-block;font-size:12px;font-weight:600;border-radius:8px;padding:3px 8px;margin:4px 4px 0 0;background:var(--out-l);color:var(--out)}
 .mchip.part{background:var(--amb-l);color:var(--amb)}
 .ok{color:var(--in);font-size:13px}
-.alert{display:flex;gap:12px;align-items:center;cursor:pointer}.alert .ico{background:var(--amb-l);color:var(--amb)}
+.strip{display:flex;gap:3px;margin-top:10px}.strip i{flex:1;height:20px;border-radius:4px;font-style:normal;font-size:10px;line-height:20px;text-align:center;background:var(--bg);color:var(--mute)}
+.strip i.ok{background:var(--in-l);color:var(--in)}.strip i.no{background:var(--out-l);color:var(--out)}.strip i.pt{background:var(--amb-l);color:var(--amb)}
+.strip-l{display:flex;gap:3px;font-size:9px;color:var(--mute);margin-top:2px}.strip-l span{flex:1;text-align:center}
+.alert{display:flex;gap:12px;align-items:center;cursor:pointer}
+.setup{max-width:420px;margin:7vh auto 0;padding:0 16px}.setup h1{color:var(--teal);margin:0 0 4px}.setup p{color:var(--mute);margin:0 0 8px}
+.banner{background:var(--amb-l);color:var(--amb);border-radius:12px;padding:10px 12px;font-size:13px;margin-bottom:12px}
+.bars{display:flex;align-items:flex-end;gap:8px;height:84px;margin-top:8px}
+.bars>div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;font-size:10px;color:var(--mute)}
+.bars .pr{display:flex;flex-direction:row;gap:2px;align-items:flex-end;height:68px;width:100%}.bars .pr i{flex:1;border-radius:3px 3px 0 0;min-height:2px}
+.bars .a{background:var(--in)}.bars .b{background:var(--out)}
+.bar{height:7px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;background:var(--teal)}
 .hide{display:none!important}
-.gear{position:absolute;right:12px;top:calc(14px + env(safe-area-inset-top));border:0;background:rgba(255,255,255,.16);color:#fff;width:38px;height:38px;border-radius:12px;font-size:18px}
-header{position:relative}
-.banner{background:var(--amb-l);color:var(--amb);border-radius:12px;padding:10px 12px;font-size:13px;margin:56px 0 -44px;position:relative}
-.setup{max-width:420px;margin:8vh auto 0;padding:0 16px}.setup h1{color:var(--teal);margin:0 0 4px}.setup p{color:var(--mute);margin:0 0 8px}
-.setup small{display:block;color:var(--mute);font-size:12px;margin-top:4px}
-.link{background:none;border:0;color:var(--teal);font:inherit;padding:12px 0;width:100%}
 </style>
 </head>
 <body>
 
+<!-- ============ sambungan (kali pertama) ============ -->
 <div id="lock" class="setup hide">
   <div class="card">
     <h1>Belanjawan Kelab Guru</h1>
@@ -104,23 +104,31 @@ header{position:relative}
 </div>
 
 <div id="app" class="hide">
-<header><h1>Belanjawan Kelab Guru</h1><p id="sync">Memuatkan…</p><button class="gear" id="gear" aria-label="Tetapan">⚙</button></header>
+<header>
+  <h1 id="hTitle">Belanjawan Kelab Guru<small id="sync">Memuatkan…</small></h1>
+  <button class="ib" id="reload" aria-label="Muat semula">↻</button>
+  <button class="ib" id="gear" aria-label="Tetapan">⚙</button>
+</header>
 <main>
+  <div class="banner hide" id="offline">Tiada sambungan. Memaparkan data terakhir yang disimpan; simpan dan padam tidak tersedia.</div>
+
+  <!-- Ringkasan -->
   <section id="v-home">
-    <div class="banner hide" id="offline">Tiada sambungan. Memaparkan data terakhir yang disimpan; simpan/padam tidak tersedia.</div>
-    <div class="card bal">
-      <small>Baki semasa</small><div class="v" id="bal">RM0.00</div>
+    <div class="card">
+      <div class="lbl">Baki semasa</div><div class="big" id="bal">RM0.00</div>
       <div class="pair">
         <div class="pill in"><b id="mIn">RM0</b><span>Masuk bulan ini</span></div>
         <div class="pill out"><b id="mOut">RM0</b><span>Keluar bulan ini</span></div>
       </div>
     </div>
-    <div class="card alert hide" id="dueCard"><div class="ico">!</div><div class="t" style="flex:1"><b id="dueT"></b><div id="dueS" style="font-size:12px;color:var(--mute)"></div></div>›</div>
+    <div class="card alert hide" id="dueCard"><div class="ico Amb">!</div><div class="t" style="flex:1"><b id="dueT"></b><div id="dueS" style="font-size:12px;color:var(--mute)"></div></div><span style="color:var(--mute)">›</span></div>
+    <div class="card"><div class="lbl">Enam bulan terakhir</div><div class="bars" id="bars"></div></div>
     <h2>Terkini</h2><div class="card flush" id="recent"></div>
     <h2>Perbelanjaan ikut kategori</h2><div class="card" id="cats"></div>
   </section>
 
-  <section id="v-list" class="hide" style="margin-top:56px">
+  <!-- Rekod -->
+  <section id="v-list" class="hide">
     <input id="q" placeholder="Cari butiran / nama…" type="search">
     <div class="chips" style="margin-top:10px" id="filt">
       <button class="chip on" data-f="">Semua</button><button class="chip" data-f="Masuk">Masuk</button><button class="chip" data-f="Keluar">Keluar</button>
@@ -128,8 +136,11 @@ header{position:relative}
     <div id="list"></div>
   </section>
 
-  <section id="v-ahli" class="hide" style="margin-top:56px">
-    <div class="card flush" id="ahli"></div>
+  <!-- Yuran -->
+  <section id="v-yuran" class="hide">
+    <div class="card" id="ySum"></div>
+    <div class="chips" id="yFilt"><button class="chip on" data-f="due">Belum bayar</button><button class="chip" data-f="all">Semua ahli</button></div>
+    <div class="card flush" id="yList"></div>
   </section>
 </main>
 
@@ -137,9 +148,10 @@ header{position:relative}
 <nav>
   <button data-v="home" class="on"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8v10H3z"/></svg>Ringkasan</button>
   <button data-v="list"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>Rekod</button>
-  <button data-v="ahli"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-7 7-7s7 3 7 7M17 4a4 4 0 010 8M22 21c0-3-2-5-4-6"/></svg>Yuran</button>
+  <button data-v="yuran"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-7 7-7s7 3 7 7M17 4a4 4 0 010 8M22 21c0-3-2-5-4-6"/></svg>Yuran<span class="dot hide" id="navDot"></span></button>
 </nav>
 
+<!-- Tambah rekod -->
 <div class="sheet" id="sheet"><div class="in">
   <div class="seg" id="mode"><button data-m="Masuk" class="on Masuk">Masuk</button><button data-m="Keluar">Keluar</button></div>
   <div id="f-type-wrap"><div class="chips" style="margin-top:12px"><button class="chip on" data-t="yuran">Yuran ahli</button><button class="chip" data-t="biasa">Lain-lain</button></div></div>
@@ -150,8 +162,9 @@ header{position:relative}
     <div class="yr"><button type="button" id="yPrev">‹</button><b id="yYear"></b><button type="button" id="yNext">›</button></div>
     <div class="months" id="y-months"></div>
     <p id="y-sum" style="font-size:12px;color:var(--mute);margin:8px 0 0"></p>
-    <div class="chk"><input type="checkbox" id="y-k" checked><span>Yuran Kelab</span><input type="number" id="y-kv" inputmode="decimal"></div>
-    <div class="chk"><input type="checkbox" id="y-l"><span>Yuran Lawatan</span><input type="number" id="y-lv" inputmode="decimal"></div>
+    <div class="chk"><input type="checkbox" id="y-k" checked><span>Yuran Kelab / bulan</span><input type="number" id="y-kv" inputmode="decimal"></div>
+    <div class="chk"><input type="checkbox" id="y-l"><span>Yuran Lawatan / bulan</span><input type="number" id="y-lv" inputmode="decimal"></div>
+    <p id="y-total" style="font-weight:700;margin:4px 0 0"></p>
   </div>
 
   <div id="f-biasa" class="hide">
@@ -164,47 +177,48 @@ header{position:relative}
   <button class="ghost" id="cancel">Batal</button>
 </div></div>
 
+<!-- Butiran rekod -->
+<div class="sheet" id="detail"><div class="in" id="dBody"></div></div>
+
+<!-- Tetapan -->
 <div class="sheet" id="settings"><div class="in">
   <h2 style="margin:0 0 4px">Tetapan</h2>
   <p style="color:var(--mute);font-size:13px;margin:0 0 8px" id="setInfo"></p>
-  <button class="go" id="installBtn" style="background:var(--in-l);color:var(--in)">Pasang app di skrin utama</button>
-  <button class="go" id="refreshBtn">Muat semula data</button>
+  <button class="go soft" id="installBtn">Pasang app di skrin utama</button>
   <button class="go del" id="logoutBtn">Padam sambungan &amp; PIN daripada peranti ini</button>
   <button class="ghost" id="setClose">Tutup</button>
 </div></div>
-
-<div class="sheet" id="detail"><div class="in" id="dBody"></div></div>
 </div>
 <div class="toast" id="toast"></div>
 
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const RM = n => (n < 0 ? '-' : '') + 'RM' + Math.abs(n).toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+const RMs = n => RM(n).replace('RM', '');
 const MON = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogo','Sep','Okt','Nov','Dis'];
 const HARI = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let PIN = '', API = '', D = null;
-const state = {f: '', q: '', mode: 'Masuk', type: 'yuran', year: new Date().getFullYear(), sel: new Set()};
+const state = {f: '', q: '', yf: 'due', mode: 'Masuk', type: 'yuran', year: new Date().getFullYear(), sel: new Set()};
 const store = {get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} }};
 
-const ACTION = {getData: 'getData', addTransactions: 'add', deleteTransaction: 'delete'};
-async function run(fn, pin, arg) {
-  const body = {action: ACTION[fn], pin};
-  if (fn === 'addTransactions') body.rows = arg; if (fn === 'deleteTransaction') body.id = arg;
+/* ---------------- API ---------------- */
+async function api(body) {
   let r;
-  try { r = await fetch(API, {method: 'POST', headers: {'Content-Type': 'text/plain;charset=utf-8'}, body: JSON.stringify(body), redirect: 'follow'}); }
+  try { r = await fetch(API, {method: 'POST', headers: {'Content-Type': 'text/plain;charset=utf-8'}, body: JSON.stringify({...body, pin: PIN}), redirect: 'follow'}); }
   catch (e) { const err = new Error('Tiada sambungan ke Google Sheet'); err.offline = true; throw err; }
   let j; try { j = await r.json(); } catch (e) { throw new Error('Jawapan tidak sah daripada API. Semak URL (mesti berakhir /exec) dan deployment.'); }
   if (!j.ok) throw new Error(j.error || 'Ralat tidak diketahui');
   return j.data;
 }
-function toast(t) { const e = $('#toast'); e.textContent = t; e.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => e.style.display = 'none', 2600); }
+function toast(t) { const e = $('#toast'); e.textContent = t; e.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => e.style.display = 'none', 2800); }
 const today = () => { const d = new Date(); return new Date(d - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); };
-const mIdx = s => +s.slice(0, 4) * 12 + (+s.slice(5, 7) - 1);          // 'YYYY-MM' -> nombor bulan
+const mIdx = s => +s.slice(0, 4) * 12 + (+s.slice(5, 7) - 1);
 const mKey = i => `${Math.floor(i / 12)}-${String(i % 12 + 1).padStart(2, '0')}`;
 const mLabel = k => `${MON[+k.slice(5, 7) - 1]} ${k.slice(2, 4)}`;
 const income = x => x.kelab + x.lawatan + x.lain;
 
+/* ---------------- login & muat ---------------- */
 async function login(url, pin, silent) {
   API = url.trim(); PIN = pin; $('#pinErr').textContent = '';
   if (!/^https:\/\/script\.google(usercontent)?\.com\/.+\/exec$/.test(API)) {
@@ -213,115 +227,132 @@ async function login(url, pin, silent) {
   try { await load(); store.set('api', API); store.set('pin', pin); $('#lock').classList.add('hide'); $('#app').classList.remove('hide'); }
   catch (e) {
     const cached = e.offline && silent && store.get('cache');
-    if (cached) { D = JSON.parse(cached); D.items.forEach((x, i) => x.i = i); render(); $('#offline').classList.remove('hide');
-      $('#sync').textContent = 'Luar talian - data terakhir'; $('#lock').classList.add('hide'); $('#app').classList.remove('hide'); return; }
-    if (silent && !e.offline) { store.set('pin', ''); }
+    if (cached) { D = JSON.parse(cached); render(); $('#offline').classList.remove('hide'); $('#sync').textContent = 'Luar talian · data terakhir';
+      $('#lock').classList.add('hide'); $('#app').classList.remove('hide'); return; }
+    if (silent && !e.offline) store.set('pin', '');
     $('#pinErr').textContent = e.message; showLock();
   }
 }
 function showLock() { $('#app').classList.add('hide'); $('#lock').classList.remove('hide'); $('#apiUrl').value = API || store.get('api') || ''; }
 async function load() {
-  D = await run('getData', PIN);
-  D.items.forEach((x, i) => x.i = i);
+  D = await api({action: 'getData'});
   store.set('cache', JSON.stringify(D));
   $('#offline').classList.add('hide');
   render();
-  $('#sync').textContent = 'Dikemas kini ' + new Date().toLocaleTimeString('ms-MY', {hour: '2-digit', minute: '2-digit'});
+  $('#sync').textContent = (D.sheetName || 'Google Sheet') + ' · ' + new Date().toLocaleTimeString('ms-MY', {hour: '2-digit', minute: '2-digit'});
 }
 
-/* ---- logik yuran: bulan dibayar / belum bayar ---- */
-function paidMap(nama, cat) {           // {'2026-03': 'full' | amaun separa}
-  const m = {};
-  D.items.filter(x => x.ahli === nama && x[cat] > 0 && x.bulan).forEach(x => x.bulan.split(', ').forEach(t => {
-    const [k, a] = t.split(':'); if (!(k in m) || m[k] !== 'full') m[k] = a ? +a : 'full';
-  }));
-  return m;
+/* ---------------- yuran (dibaca daripada tab Yuran dalam sheet) ---------------- */
+function yRow(nama) { return D.yuran.rows.find(r => r.nama === nama); }
+function unpaid(r, cat) {   // [{k:'YYYY-MM', part:bool}] bagi status ✗ atau ½
+  const st = cat === 'k' ? r.k : r.l;
+  return D.yuran.bulan.map((k, i) => ({k, s: st[i]})).filter(o => o.s === '✗' || o.s === '½').map(o => ({k: o.k, part: o.s === '½'}));
 }
-function period(a, cat) {               // [indeks bulan] yang wajib dibayar
-  const rate = cat === 'kelab' ? a.kelab : a.lawatan; if (!rate) return [];
-  const now = mIdx(today().slice(0, 7)); let end = now;
-  if (cat === 'lawatan' && D.lawatanAkhir) end = Math.min(end, mIdx(D.lawatanAkhir));
-  if (a.tamat) end = Math.min(end, mIdx(a.tamat));
-  const out = []; for (let i = mIdx(a.mula || '2025-06'); i <= end; i++) out.push(i); return out;
-}
-function unpaid(a, cat) {
-  const pm = paidMap(a.nama, cat);
-  return period(a, cat).map(i => ({k: mKey(i), p: pm[mKey(i)]})).filter(o => o.p !== 'full');
+function yStats() {
+  let people = 0, months = 0, rm = 0;
+  const list = D.yuran.rows.map(r => {
+    const a = D.ahli.find(x => x.nama === r.nama) || {kelab: 35, lawatan: 50};
+    const k = unpaid(r, 'k'), l = unpaid(r, 'l');
+    const due = k.length + l.length;
+    if (due) { people++; months += due; rm += k.filter(o => !o.part).length * a.kelab + l.filter(o => !o.part).length * a.lawatan; }
+    return {r, a, k, l, due};
+  });
+  return {list, people, months, rm};
 }
 
-/* ---- paparan ---- */
+/* ---------------- paparan ---------------- */
 function render() {
   const items = D.items, sum = f => items.reduce((s, x) => s + f(x), 0);
   $('#bal').textContent = RM(sum(income) - sum(x => x.keluar));
   const ym = today().slice(0, 7), mo = items.filter(x => x.tarikh.startsWith(ym));
   $('#mIn').textContent = RM(mo.reduce((s, x) => s + income(x), 0)); $('#mOut').textContent = RM(mo.reduce((s, x) => s + x.keluar, 0));
-  const sorted = [...items].sort((a, b) => b.tarikh.localeCompare(a.tarikh) || b.i - a.i);
-  $('#recent').innerHTML = sorted.slice(0, 6).map(rowHtml).join('') || '<div class="empty">Tiada rekod</div>';
-
+  const sorted = [...items].sort((a, b) => b.tarikh.localeCompare(a.tarikh) || b.row - a.row);
+  $('#recent').innerHTML = sorted.slice(0, 5).map(rowHtml).join('') || '<div class="empty">Tiada rekod</div>';
+  // enam bulan terakhir
+  const now = mIdx(ym), mx = {}; let top = 1;
+  items.forEach(x => { const i = mIdx(x.tarikh); if (i > now - 6) { const o = mx[i] ||= {a: 0, b: 0}; o.a += income(x); o.b += x.keluar; top = Math.max(top, o.a, o.b); } });
+  $('#bars').innerHTML = [5, 4, 3, 2, 1, 0].map(d => { const i = now - d, o = mx[i] || {a: 0, b: 0};
+    return `<div><div class="pr"><i class="a" style="height:${o.a / top * 100}%"></i><i class="b" style="height:${o.b / top * 100}%"></i></div>${MON[i % 12]}</div>`; }).join('');
+  // kategori
   const keluar = items.filter(x => x.keluar > 0), tot = keluar.reduce((s, x) => s + x.keluar, 0) || 1, by = {};
   keluar.forEach(x => by[x.kategori || 'Pelbagai'] = (by[x.kategori || 'Pelbagai'] || 0) + x.keluar);
   $('#cats').innerHTML = Object.entries(by).sort((a, b) => b[1] - a[1]).map(([k, v]) =>
-    `<div style="margin:10px 0"><div style="display:flex;justify-content:space-between"><span>${esc(k)}</span><b>${RM(v)}</b></div><div class="bar"><i style="width:${v / tot * 100}%"></i></div></div>`).join('');
-
-  renderList(sorted); renderAhli();
+    `<div style="margin:10px 0"><div style="display:flex;justify-content:space-between"><span>${esc(k)}</span><b>${RM(v)}</b></div><div class="bar"><i style="width:${v / tot * 100}%"></i></div></div>`).join('') || '<div class="empty">Tiada perbelanjaan</div>';
+  renderList(sorted); renderYuran();
 }
 function rowHtml(x) {
   const jenis = x.keluar > 0 ? 'Keluar' : 'Masuk', jum = jenis === 'Keluar' ? x.keluar : income(x);
   const split = x.kelab && x.lawatan ? `<small>K ${x.kelab} · L ${x.lawatan}</small>` : '';
   const d = x.tarikh.split('-');
-  return `<div class="row" data-i="${x.i}"><div class="ico ${jenis}">${jenis === 'Masuk' ? '↓' : '↑'}</div>
-  <div class="t"><b>${esc(x.butiran || x.kategori)}</b><span>${+d[2]} ${MON[d[1] - 1]} · ${esc(x.kategori)}</span></div>
-  <div class="amt ${jenis}">${jenis === 'Masuk' ? '+' : '-'}${RM(jum).replace('RM', '')}${split}</div></div>`;
+  return `<div class="row" data-r="${x.row}"><div class="ico ${jenis}">${jenis === 'Masuk' ? '↓' : '↑'}</div>
+  <div class="t"><b>${esc(x.butiran || x.kategori)}</b><span>${+d[2]} ${MON[d[1] - 1]} · ${esc(x.kategori)}${x.nota ? ' · ⚠ ' + esc(x.nota) : ''}</span></div>
+  <div class="amt ${jenis}">${jenis === 'Masuk' ? '+' : '-'}${RMs(jum)}${split}</div></div>`;
 }
 function renderList(sorted) {
-  sorted = sorted || [...D.items].sort((a, b) => b.tarikh.localeCompare(a.tarikh) || b.i - a.i);
+  sorted = sorted || [...D.items].sort((a, b) => b.tarikh.localeCompare(a.tarikh) || b.row - a.row);
   const q = state.q.toLowerCase();
   const r = sorted.filter(x => (!state.f || (state.f === 'Keluar') === (x.keluar > 0)) &&
     (!q || (x.butiran + ' ' + x.ahli + ' ' + x.kategori).toLowerCase().includes(q)));
   const days = []; r.slice(0, 400).forEach(x => { const d = days[days.length - 1]; d && d.t === x.tarikh ? d.r.push(x) : days.push({t: x.tarikh, r: [x]}); });
   $('#list').innerHTML = days.map(d => {
     const [y, m, dd] = d.t.split('-'), net = d.r.reduce((s, x) => s + income(x) - x.keluar, 0);
-    return `<div class="day"><div>${HARI[new Date(+y, m - 1, +dd).getDay()]}, ${+dd} ${MON[m - 1]} ${y}</div><span class="${net < 0 ? 'n' : 'p'}">${net < 0 ? '-' : '+'}${RM(net).replace(/RM|-/g, '')}</span></div>
+    return `<div class="day"><div>${HARI[new Date(+y, m - 1, +dd).getDay()]}, ${+dd} ${MON[m - 1]} ${y}</div><span class="${net < 0 ? 'n' : 'p'}">${net < 0 ? '-' : '+'}${RMs(Math.abs(net))}</span></div>
       <div class="card flush">${d.r.map(rowHtml).join('')}</div>`;
   }).join('') || '<div class="empty">Tiada rekod</div>';
 }
-function renderAhli() {
-  const rows = D.ahli.map(a => ({a, k: unpaid(a, 'kelab'), l: unpaid(a, 'lawatan')})).sort((x, y) => (y.k.length + y.l.length) - (x.k.length + x.l.length));
-  const chips = u => u.map(o => `<span class="mchip ${o.p === 'full' || o.p == null ? '' : 'part'}">${mLabel(o.k)}${o.p != null && o.p !== 'full' ? ' ½' : ''}</span>`).join('');
-  $('#ahli').innerHTML = rows.map(r => `<div class="row" style="align-items:flex-start"><div class="ico ${r.k.length + r.l.length ? 'Keluar' : 'Masuk'}">${esc(r.a.nama[0])}</div>
-    <div class="t" style="white-space:normal"><b>${esc(r.a.nama)}${r.a.aktif ? '' : ' (tamat)'}</b>
-    <span>Kelab</span> ${r.k.length ? chips(r.k) : '<span class="ok">✓ selesai</span>'}<br>
-    ${r.a.lawatan ? `<span>Lawatan</span> ${r.l.length ? chips(r.l) : '<span class="ok">✓ selesai</span>'}` : ''}</div></div>`).join('');
-  const due = rows.filter(r => r.k.length + r.l.length), total = due.reduce((s, r) => s + r.k.length + r.l.length, 0);
-  $('#dueCard').classList.toggle('hide', !due.length);
-  $('#dueT').textContent = `${due.length} ahli ada yuran belum dibayar`; $('#dueS').textContent = `${total} bulan kesemuanya - ketik untuk lihat`;
+function renderYuran() {
+  const st = yStats();
+  $('#ySum').innerHTML = st.people
+    ? `<div class="lbl">Belum bayar</div><div class="big" style="color:var(--out);margin-bottom:2px">${st.people} ahli</div><div style="color:var(--mute);font-size:13px">${st.months} bulan kesemuanya · anggaran ${RM(st.rm)}</div>`
+    : `<div class="lbl">Yuran</div><div class="big" style="margin-bottom:2px">Semua selesai ✓</div>`;
+  const dot = $('#navDot'); dot.textContent = st.people; dot.classList.toggle('hide', !st.people);
+  $('#dueCard').classList.toggle('hide', !st.people);
+  $('#dueT').textContent = `${st.people} ahli ada yuran belum dibayar`; $('#dueS').textContent = `${st.months} bulan kesemuanya · ketik untuk lihat`;
+  const chips = u => u.map(o => `<span class="mchip ${o.part ? 'part' : ''}">${mLabel(o.k)}${o.part ? ' ½' : ''}</span>`).join('');
+  const rows = st.list.filter(x => state.yf === 'all' || x.due).sort((a, b) => b.due - a.due || a.r.nama.localeCompare(b.r.nama));
+  const strip = (r, c) => `<div class="strip">${(c === 'k' ? r.k : r.l).map(s => `<i class="${s === '✓' ? 'ok' : s === '✗' ? 'no' : s === '½' ? 'pt' : ''}">${s === '–' || s === '·' ? '' : s}</i>`).join('')}</div>`;
+  $('#yList').innerHTML = rows.map(x => `<div class="row" style="align-items:flex-start" data-n="${esc(x.r.nama)}">
+    <div class="ico ${x.due ? 'Keluar' : 'Masuk'}">${esc(x.r.nama[0])}</div>
+    <div class="t" style="white-space:normal"><b>${esc(x.r.nama)}${x.a.tamat ? ' <span style="font-weight:400;color:var(--mute)">(tamat)</span>' : ''}</b>
+      <span>Kelab</span> ${x.k.length ? chips(x.k) : '<span class="ok">✓ selesai</span>'}
+      ${x.a.lawatan ? `<br><span>Lawatan</span> ${x.l.length ? chips(x.l) : '<span class="ok">✓ selesai</span>'}` : ''}
+      <div class="more hide">${strip(x.r, 'k')}<div class="strip-l">${D.yuran.bulan.map(k => `<span>${MON[+k.slice(5) - 1][0]}</span>`).join('')}</div>
+      ${x.a.lawatan ? strip(x.r, 'l') : ''}
+      <button class="go soft" style="margin-top:12px;padding:10px" data-pay="${esc(x.r.nama)}">Catat bayaran ${esc(x.r.nama)}</button></div></div></div>`).join('')
+    || '<div class="empty">Tiada ahli untuk dipaparkan</div>';
 }
 
-/* ---- tambah ---- */
-function openSheet() {
+/* ---------------- tambah ---------------- */
+function openSheet(ahli) {
   $('#f-date').value = today();
-  $('#y-ahli').innerHTML = D.ahli.filter(a => a.aktif).map(a => `<option>${esc(a.nama)}</option>`).join('');
+  $('#y-ahli').innerHTML = D.ahli.filter(a => !a.tamat || a.nama === ahli).map(a => `<option>${esc(a.nama)}</option>`).join('');
   $('#b-ahli').innerHTML = '<option value="">-</option>' + D.ahli.map(a => `<option>${esc(a.nama)}</option>`).join('');
   $('#b-but').value = ''; $('#b-jum').value = '';
-  setMode('Masuk'); pickAhli(); $('#sheet').classList.add('open');
+  if (ahli) $('#y-ahli').value = ahli;
+  state.type = 'yuran'; setMode('Masuk'); pickAhli(); $('#sheet').classList.add('open');
 }
 function curAhli() { return D.ahli.find(x => x.nama === $('#y-ahli').value) || {nama: '', kelab: 35, lawatan: 50}; }
 function pickAhli() {
-  const a = curAhli(); $('#y-kv').value = a.kelab || 35; $('#y-lv').value = a.lawatan || 50;
-  const u = unpaid(a, 'kelab'); state.sel = new Set(u.length ? [u[0].k] : [mKey(mIdx(today().slice(0, 7)))]);
+  const a = curAhli(), r = yRow(a.nama);
+  $('#y-kv').value = a.kelab || 35; $('#y-lv').value = a.lawatan || 50;
+  const u = r ? unpaid(r, 'k') : [];
+  state.sel = new Set([u.length ? u[0].k : today().slice(0, 7)]);
   state.year = +[...state.sel][0].slice(0, 4); drawMonths();
 }
 function drawMonths() {
-  const a = curAhli(), pk = paidMap(a.nama, 'kelab'), due = new Set(unpaid(a, 'kelab').map(o => o.k));
+  const a = curAhli(), r = yRow(a.nama), idx = {};
+  if (r) D.yuran.bulan.forEach((k, i) => idx[k] = r.k[i]);
   $('#yYear').textContent = state.year;
   $('#y-months').innerHTML = MON.map((m, i) => {
-    const k = `${state.year}-${String(i + 1).padStart(2, '0')}`;
-    const cls = state.sel.has(k) ? 'sel' : pk[k] === 'full' ? 'paid' : k in pk ? 'part' : due.has(k) ? 'due' : '';
-    const note = pk[k] === 'full' ? '✓ dibayar' : k in pk ? 'separa' : due.has(k) ? 'belum' : '&nbsp;';
-    return `<button type="button" data-k="${k}" class="${cls}">${m}<small>${state.sel.has(k) ? '✓ dipilih' : note}</small></button>`;
+    const k = `${state.year}-${String(i + 1).padStart(2, '0')}`, s = idx[k];
+    const cls = state.sel.has(k) ? 'sel' : s === '✓' ? 'paid' : s === '½' ? 'part' : s === '✗' ? 'due' : '';
+    const note = state.sel.has(k) ? '✓ dipilih' : s === '✓' ? 'dibayar' : s === '½' ? 'separa' : s === '✗' ? 'belum' : '&nbsp;';
+    return `<button type="button" data-k="${k}" class="${cls}">${m}<small>${note}</small></button>`;
   }).join('');
   const ks = [...state.sel].sort();
   $('#y-sum').textContent = ks.length ? `${ks.length} bulan: ${ks.map(mLabel).join(', ')}` : 'Pilih bulan yang dibayar';
+  const n = ks.length, k = $('#y-k').checked ? +$('#y-kv').value * n : 0, l = $('#y-l').checked ? +$('#y-lv').value * n : 0;
+  $('#y-total').textContent = n ? `Jumlah: ${RM(k + l)}` : '';
 }
 function setMode(m) {
   state.mode = m;
@@ -336,93 +367,103 @@ function setType(t) {
   $('#f-yuran').classList.toggle('hide', !yuran); $('#f-biasa').classList.toggle('hide', yuran);
   $('#b-kat').innerHTML = D.kategori[state.mode].map(k => `<option>${esc(k)}</option>`).join('');
 }
+function runs(ks) {         // ['2026-03','2026-04','2026-08'] -> [[mula, akhir], ...]
+  const out = []; ks.sort().forEach(k => { const o = out[out.length - 1]; o && mIdx(k) === mIdx(o[1]) + 1 ? o[1] = k : out.push([k, k]); }); return out;
+}
+function runLabel([a, b]) {
+  if (a === b) return mLabel(a);
+  return a.slice(0, 4) === b.slice(0, 4) ? `${MON[+a.slice(5) - 1]}–${MON[+b.slice(5) - 1]} ${a.slice(2, 4)}` : `${mLabel(a)}–${mLabel(b)}`;
+}
 async function save() {
   const tarikh = $('#f-date').value, rows = [];
   if (!tarikh) return toast('Pilih tarikh');
   if (state.mode === 'Masuk' && state.type === 'yuran') {
-    const ks = [...state.sel].sort(), nama = $('#y-ahli').value;
+    const nama = $('#y-ahli').value, ks = [...state.sel];
     if (!ks.length) return toast('Pilih sekurang-kurangnya satu bulan');
     const k = $('#y-k').checked, l = $('#y-l').checked;
     if (!k && !l) return toast('Pilih Kelab atau Lawatan');
-    rows.push({tarikh, ahli: nama, butiran: `${nama} (${ks.map(mLabel).join(', ')})`, kategori: 'Yuran', bulan: ks.join(', '),
-      kelab: k ? +(+$('#y-kv').value * ks.length).toFixed(2) : 0, lawatan: l ? +(+$('#y-lv').value * ks.length).toFixed(2) : 0});
+    const kv = +$('#y-kv').value, lv = +$('#y-lv').value;
+    if ((k && !(kv > 0)) || (l && !(lv > 0))) return toast('Masukkan kadar yuran');
+    runs(ks).forEach(r => { const n = mIdx(r[1]) - mIdx(r[0]) + 1;
+      rows.push({tarikh, butiran: `${nama} (${runLabel(r)})`, ahli: nama, kategori: 'Yuran', mula: r[0], akhir: r[1] === r[0] ? '' : r[1],
+        kelab: k ? +(kv * n).toFixed(2) : 0, lawatan: l ? +(lv * n).toFixed(2) : 0}); });
   } else {
     const jumlah = +$('#b-jum').value, butiran = $('#b-but').value.trim();
     if (!(jumlah > 0)) return toast('Masukkan jumlah');
     if (!butiran) return toast('Masukkan butiran');
-    rows.push({tarikh, ahli: $('#b-ahli').value, butiran, kategori: $('#b-kat').value, [state.mode === 'Masuk' ? 'lain' : 'keluar']: jumlah});
+    rows.push({tarikh, butiran, ahli: $('#b-ahli').value, kategori: $('#b-kat').value, [state.mode === 'Masuk' ? 'lain' : 'keluar']: jumlah});
   }
   const btn = $('#save'); btn.disabled = true; btn.textContent = 'Menyimpan…';
-  try { await run('addTransactions', PIN, rows); await load(); $('#sheet').classList.remove('open'); toast('Disimpan ke Google Sheet ✓'); }
+  try { await api({action: 'add', rows}); await load(); $('#sheet').classList.remove('open'); toast('Disimpan ke Google Sheet ✓'); }
   catch (e) { toast(e.message); }
   btn.disabled = false; btn.textContent = 'Simpan';
 }
 
-/* ---- event (pengendali tidak memulangkan nilai: elak preventDefault tersembunyi) ---- */
+/* ---------------- peristiwa (pengendali tidak memulangkan nilai) ---------------- */
 $('#pinGo').onclick = () => login($('#apiUrl').value, $('#pin').value);
 $('#pin').onkeydown = e => { if (e.key === 'Enter') login($('#apiUrl').value, $('#pin').value); };
-let installEvt = null;
-window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; $('#installBtn').classList.remove('hide'); });
-window.addEventListener('appinstalled', () => { installEvt = null; $('#installBtn').classList.add('hide'); toast('App dipasang'); });
-$('#gear').onclick = () => {
-  $('#setInfo').textContent = 'Disambung ke: ' + API.replace(/^(https:\/\/[^/]+\/.{0,24}).*(\/exec)$/, '$1…$2');
-  $('#installBtn').classList.toggle('hide', !installEvt); $('#settings').classList.add('open');
-};
-$('#installBtn').onclick = async () => { if (installEvt) { installEvt.prompt(); await installEvt.userChoice; installEvt = null; $('#settings').classList.remove('open'); } };
-$('#refreshBtn').onclick = async () => { $('#settings').classList.remove('open'); try { await load(); toast('Dikemas kini'); } catch (e) { toast(e.message); } };
-$('#logoutBtn').onclick = () => { ['api', 'pin', 'cache'].forEach(k => store.set(k, '')); API = PIN = ''; D = null; $('#settings').classList.remove('open'); showLock(); };
-$('#setClose').onclick = () => $('#settings').classList.remove('open');
-$('#settings').onclick = e => { if (e.target.id === 'settings') $('#settings').classList.remove('open'); };
 function showView(v) {
   $$('nav button').forEach(x => x.classList.toggle('on', x.dataset.v === v));
-  ['home', 'list', 'ahli'].forEach(id => $('#v-' + id).classList.toggle('hide', id !== v));
+  ['home', 'list', 'yuran'].forEach(id => $('#v-' + id).classList.toggle('hide', id !== v));
   window.scrollTo(0, 0);
 }
 $$('nav button').forEach(b => b.onclick = () => showView(b.dataset.v));
-$('#dueCard').onclick = () => showView('ahli');
-$('#fab').onclick = openSheet;
+$('#dueCard').onclick = () => showView('yuran');
+$('#fab').onclick = () => openSheet();
 $('#cancel').onclick = () => $('#sheet').classList.remove('open');
 $('#sheet').onclick = e => { if (e.target.id === 'sheet') $('#sheet').classList.remove('open'); };
 $('#detail').onclick = e => { if (e.target.id === 'detail') $('#detail').classList.remove('open'); };
 $('#mode').onclick = e => { if (e.target.dataset.m) setMode(e.target.dataset.m); };
 $('#f-type-wrap').onclick = e => { if (e.target.dataset.t) setType(e.target.dataset.t); };
 $('#y-ahli').onchange = pickAhli;
+['y-k', 'y-l', 'y-kv', 'y-lv'].forEach(id => $('#' + id).oninput = drawMonths);
 $('#yPrev').onclick = () => { state.year--; drawMonths(); };
 $('#yNext').onclick = () => { state.year++; drawMonths(); };
-$('#y-months').onclick = e => {
-  const b = e.target.closest('button'); if (!b) return;
-  state.sel.has(b.dataset.k) ? state.sel.delete(b.dataset.k) : state.sel.add(b.dataset.k); drawMonths();
-};
+$('#y-months').onclick = e => { const b = e.target.closest('button'); if (!b) return; state.sel.has(b.dataset.k) ? state.sel.delete(b.dataset.k) : state.sel.add(b.dataset.k); drawMonths(); };
 $('#save').onclick = save;
 $('#q').oninput = e => { state.q = e.target.value; renderList(); };
-$('#filt').onclick = e => {
-  if (e.target.dataset.f === undefined) return;
-  state.f = e.target.dataset.f; $$('#filt .chip').forEach(c => c.classList.toggle('on', c === e.target)); renderList();
+$('#filt').onclick = e => { if (e.target.dataset.f === undefined) return; state.f = e.target.dataset.f; $$('#filt .chip').forEach(c => c.classList.toggle('on', c === e.target)); renderList(); };
+$('#yFilt').onclick = e => { if (!e.target.dataset.f) return; state.yf = e.target.dataset.f; $$('#yFilt .chip').forEach(c => c.classList.toggle('on', c === e.target)); renderYuran(); };
+$('#reload').onclick = async () => { try { await load(); toast('Dikemas kini'); } catch (e) { toast(e.message); } };
+let installEvt = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
+window.addEventListener('appinstalled', () => { installEvt = null; toast('App dipasang'); });
+$('#gear').onclick = () => {
+  $('#setInfo').textContent = 'Disambung ke: ' + API.replace(/^(https:\/\/[^/]+\/.{0,24}).*(\/exec)$/, '$1…$2');
+  $('#installBtn').classList.toggle('hide', !installEvt); $('#settings').classList.add('open');
 };
+$('#installBtn').onclick = async () => { if (installEvt) { installEvt.prompt(); await installEvt.userChoice; installEvt = null; $('#settings').classList.remove('open'); } };
+$('#logoutBtn').onclick = () => { ['api', 'pin', 'cache'].forEach(k => store.set(k, '')); API = PIN = ''; D = null; $('#settings').classList.remove('open'); showLock(); };
+$('#setClose').onclick = () => $('#settings').classList.remove('open');
+$('#settings').onclick = e => { if (e.target.id === 'settings') $('#settings').classList.remove('open'); };
 document.addEventListener('click', e => {
-  const r = e.target.closest('.row[data-i]'); if (!r) return;
-  const x = D.items[+r.dataset.i], jenis = x.keluar > 0 ? 'Keluar' : 'Masuk';
+  const pay = e.target.closest('[data-pay]');
+  if (pay) { openSheet(pay.dataset.pay); return; }
+  const yr = e.target.closest('#yList .row[data-n]');
+  if (yr) { yr.querySelector('.more').classList.toggle('hide'); return; }
+  const r = e.target.closest('.row[data-r]'); if (!r) return;
+  const x = D.items.find(i => i.row === +r.dataset.r); if (!x) return;
+  const jenis = x.keluar > 0 ? 'Keluar' : 'Masuk';
   const detail = [x.kelab && `Kelab ${RM(x.kelab)}`, x.lawatan && `Lawatan ${RM(x.lawatan)}`, x.lain && `Lain ${RM(x.lain)}`].filter(Boolean).join(' · ');
   $('#dBody').innerHTML = `<h2 style="margin:0 0 8px">${jenis} · ${esc(x.kategori)}</h2>
     <div class="amt ${jenis}" style="font-size:28px;text-align:left">${RM(jenis === 'Keluar' ? x.keluar : income(x))}</div>
     <p>${esc(x.butiran)}</p>
-    <p style="color:var(--mute)">${esc(x.tarikh)}${x.ahli ? ' · ' + esc(x.ahli) : ''} · ${esc(x.id)}${detail ? '<br>' + esc(detail) : ''}${x.bulan ? '<br>Bulan: ' + esc(x.bulan) : ''}</p>
+    <p style="color:var(--mute)">${esc(x.tarikh)}${x.ahli ? ' · ' + esc(x.ahli) : ''}${detail ? '<br>' + esc(detail) : ''}${x.mula ? '<br>Bulan: ' + esc(x.mula) + (x.akhir ? ' hingga ' + esc(x.akhir) : '') : ''}${x.nota ? '<br>⚠ ' + esc(x.nota) : ''}</p>
     <button class="go del" id="delBtn">Padam rekod</button><button class="ghost" id="dClose">Tutup</button>`;
   $('#detail').classList.add('open');
   $('#dClose').onclick = () => $('#detail').classList.remove('open');
   let armed = false;
-  $('#delBtn').onclick = async () => {              // pengesahan dua ketukan dalam app
+  $('#delBtn').onclick = async () => {              // pengesahan dua ketukan
     const btn = $('#delBtn');
     if (!armed) { armed = true; btn.textContent = 'Ketik sekali lagi untuk SAHKAN padam'; return; }
     btn.disabled = true;
-    try { await run('deleteTransaction', PIN, x.id); $('#detail').classList.remove('open'); await load(); toast('Dipadam'); }
+    try { await api({action: 'delete', row: x.row, fp: x.fp}); $('#detail').classList.remove('open'); await load(); toast('Dipadam'); }
     catch (err) { toast(err.message); btn.disabled = false; }
   };
 });
 
 const savedApi = store.get('api'), savedPin = store.get('pin');
 if (savedApi && savedPin) login(savedApi, savedPin, true); else showLock();
-$('#installBtn').classList.add('hide');
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
 </body>

@@ -1,6 +1,6 @@
 /* Service worker: simpan "cangkerang" app supaya terbuka laju & tanpa talian.
  * Panggilan API ke Google (silang-asal) tidak disentuh. Naikkan VERSION bila mengubah fail app. */
-const VERSION = 'v1';
+const VERSION = 'v2';
 const CACHE = 'belanjawan-' + VERSION;
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png'];
 
